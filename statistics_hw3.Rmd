@@ -1,0 +1,213 @@
+---
+title: "Stat Homework 3"
+author: "Hanna Butsko"
+date: "2023-09-16"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+## Part 1
+
+Reading the file and assigning values
+```{r}
+library(readr)
+library(dplyr)
+
+setwd("/Users/annabutko/Desktop/NCF/Semester_1/Statistics/Homework")
+listings <- read.csv("listings.csv", header=TRUE)
+
+boroughs <- listings$neighbourhood_group
+prices <- listings$price
+```
+
+Creating a dictionary with "borough name" as keys and lists containing prices associated with that borough as values
+```{r}
+boroughs_dict <- list()
+for (i in 1:nrow(listings)){
+  borough <- boroughs[i]
+  price <- prices[i]
+  if (borough %in% names(boroughs_dict)){
+    boroughs_dict[[borough]] <- append(boroughs_dict[[borough]], price)
+  } else{
+    boroughs_dict[[borough]] <- list()
+  }
+}
+```
+
+Function that calculates the mean of the array
+```{r}
+my.mean <- function(data){
+  return(sum(data)/length(data))
+}
+```
+
+Function that calculates the median of the array
+```{r}
+my.median <- function(data){
+  middle <- ceiling(length(data)/2)
+  if (length(data) %% 2 != 0){
+    return(sort(data)[middle])
+  } else{
+    return((sort(data)[middle] + sort(data)[middle+1])/2)
+  }
+}
+```
+
+Calculating each borough's mean price
+```{r}
+for (borough in names(boroughs_dict)){
+  prices <- unlist(boroughs_dict[[borough]])
+  mean_price <- my.mean(prices)
+  print(paste(borough, "borough's mean price is", mean_price))
+}
+```
+
+Calculating each borough's median price
+```{r}
+for (borough in names(boroughs_dict)){
+  prices <- unlist(boroughs_dict[[borough]])
+  median_price <- my.median(prices)
+  print(paste(borough, "borough's median price is", median_price))
+}
+```
+Single vectorized operation
+```{r}
+result <- listings %>% group_by(neighbourhood_group) %>% summarize(mean_price = my.mean(price), median_price = my.median(price))
+result
+```
+In the table above, we observe notable differences between the results of the mean and median functions in our dataset. In our specific scenario, for each borough within the neighborhood group, the mean price is consistently higher than the median price. This consistent pattern indicates a right skew in the distribution of prices for all five boroughs.
+The right skew suggests that the majority of Airbnb rental prices are concentrated to the left of the distribution (representing more affordable options), while some outliers on the right (indicating more expensive options) contribute to the extended right tail in our dataset. This skewness is a characteristic feature of the distribution, with the mean being influenced by the presence of those higher-priced outliers, resulting in it being larger than the median.
+
+Comparing my median function with R built in median function
+```{r}
+flag = TRUE
+for (borough in names(boroughs_dict)){
+  if (median(unlist(boroughs_dict[[borough]]))!= my.median(unlist(boroughs_dict[[borough]]))){
+    flag <- FALSE
+    break
+  }
+}
+
+if (flag == FALSE){
+  print(paste("Function developped by the student does not return the same result as R's built in median function."))
+  } else{
+  print(paste("Function developped by the student returns the same result as R's built in median function."))
+}
+```
+
+## Part 2
+In the scatter plot below, we visualize the distribution of two quantitative variables: crime rate and education levels. A noticeable trend emerges, indicating a generally positive linear relationship between these variables. As education levels increase, the crime rate tends to rise as well. However, upon drawing a linear regression line through our data points, we observe that a significant number of points are scattered farther away from the line. This dispersion suggests that while a positive relationship exists, it is relatively weak, implying that other factors may also influence crime rates in addition to education levels.
+```{r}
+library(ggplot2)
+library(hrbrthemes)
+
+
+crime_data <- read.csv("fl_crime.csv", header=TRUE)
+crime <- crime_data$crime.rate..per.1000.
+education <- crime_data$education....
+
+# linear trend + confidence interval
+ggplot(crime_data, aes(x = education, y = crime)) +
+  geom_point() +
+  geom_smooth(method = "lm", color = "red", fill = "#69b3a2", se = TRUE) +
+  ylab('Crime Rate') +
+  xlab('Education Level') +
+  theme_minimal()
+```
+
+After calculating a correlation coefficient of approximately 0.47, our initial assumptions have been confirmed A positive correlation indeed exists, as indicated by the positive sign of our correlation coefficient. However, as previously noted, it's important to recognize that the correlation between these two variables is relatively weak. The result tends to be closer to 0 (indicating no correlation) than to 1 (indicating a strong correlation), underscoring that other factors likely play a significant role in influencing the relationship between these variables.
+```{r}
+correlation <- cor(crime, education)
+correlation
+```
+Mathematically, the correlation coefficient has a positive value because as the education level (represented by x) increases, the crime rate (represented by y) tends to increase as well, but its relatively small magnitude (around 0.47) indicates that this linear relationship is weak and that other factors may also be influencing the relationship between these variables.
+
+Fitting a linear regression model
+```{r}
+linear_regression <- lm(crime ~ education, data = crime_data)
+
+intercept <- coef(linear_regression)[1]
+slope <- coef(linear_regression)[2]
+```
+
+a) Printing the fitted equation
+```{r}
+print(paste("Fitted equation: crime =", round(intercept, 2), "+", round(slope, 2), "* education"))
+```
+
+b) This linear regression model predicts that, on average, when education level equals 0, the crime rate is approximately -50.86. However, it's important to note that such a prediction may not have a meaningful real-world interpretation because education levels do not realistically reach zero, and crime rates cannot be negative. Therefore, the intercept's value lacks practical significance in this scenario.
+
+c) The slope of a function represents the change in y as x increases by one unit. In our case, the slope can be interpreted as follows: on average, as education level increases by 1 unit, the crime rate increases by approximately 1.49 units.
+
+
+## Part 3
+# Problem 3.3
+a) The explanatory variable is income, and the response variable is happiness. We are trying to determine how family income level influences happiness.
+b) Families that reported being "not too happy" have income ratios of 55% below average, 37% average, and 8% above average. From these calculations, we can see that the percentage of "not too happy" families with incomes below average is 55 - 8 = 47 percentage points higher than those with incomes above average. Similarly, if we compare the ratio of these two proportions, we get 0.55 / 0.08 = 6.875, which indicates that the proportion of unhappy families with below-average incomes is almost 7 times higher than that of families with above-average incomes. This is a substantial difference and indicates a rather strong association between the two variables. On the other hand, the difference in proportions between below-average and average income ratios is 55 - 37 = 18 percentage points, and the ratio of proportions is 0.55 / 0.37 = 1.48, which is not as substantial as the difference between below and above-average income ratios.
+Families that reported being "pretty happy" have income ratios as follows: 33% below average, 47% average, and 20% above average. The differences in proportions are as follows:
+  14 percentage points between average and below-average income families.
+  27 percentage points between average and above-average income families.
+  13 percentage points between below-average and above-average income families.
+Regarding the ratio of proportions, it is as follows:
+  1.42 for average and below-average income families.
+  2.35 for average and above-average income families.
+  1.65 for below-average and above-average income families.
+Upon analyzing these differences in proportions and the ratios, we can observe that there isn't a substantial difference for this category between above and below-average income families. Instead, families with average income take the lead, but the difference is not significant.
+For the last response variable of this study, "very happy," the percentage rates are as follows: 23% below average, 51% average, and 26% above average incomes. The differences between average income and the other categories are notable, with a 28 percentage point difference when compared to below-average income and a 25 percentage point difference when compared to above-average income. Additionally, the ratios are 2.2 for below-average income and 2 for above-average income when compared to average income.
+Interestingly, the difference between above-average and below-average income families is only 3 percentage points, with a ratio of 1.13. This observation highlights that the majority of "very happy" families reported having an average income. Furthermore, in this category, there is very little difference between families with below-average and above-average incomes in terms of reported happiness levels.
+c) 488 out of 1814 participants reported being "very happy. 
+488 / 1814 = 0.2689
+0.2689 * 100 = 26.89%
+So, the proportion of people who reported being "very happy" is approximately 26.7%.
+
+# Problem 3.14
+a) The closer the correlation score is to 0, the weaker the correlation. In this case, a correlation of -0.07 is extremely close to 0, indicating a very weak association between political ideology and the number of times a week reading a newspaper. It's also worth noting that the negative sign of the correlation indicates a negative association.
+b) The correlation coefficient always falls within the range of -1 to 1. When the absolute value of the correlation coefficient is closer to 1, it indicates a stronger association, as the data points cluster more tightly around a straight line. Given this understanding, we can conclude that the association between political ideology and religiosity (with a correlation coefficient of 0.58) is much stronger than the association between political ideology and the number of times a week reading a newspaper.
+
+# Problem 3.16
+1.c
+2.a
+3.d
+4.b
+
+# Problem 3.26
+a) y = (9.2 + 77 * 2) * 1000 = $163,200. So, a house with 2000 square feet is estimated to sell for $163,200.
+y = (9.2 + 77 * 3) * 1000 = $240.200. So, a house with 3000 square feet is estimated to sell for $240.200.
+b) The slope represents how the response variable y (selling price) changes with respect to a one-unit change in the explanatory variable x (size of the house). In this equation, the slope of 77.0 indicates the change in the selling price in thousands of dollars for every one-thousand-square-foot increase in the size of the house. So, for every additional 1,000 square feet added to the size of the house, the price will increase by $77,000.
+c) The correlation in this case is positive because as x increases, y tends to increase as well. In other words, as the size of the house increases, the price of that house goes up. The positive correlation is also evident by the positive slope coefficient of 77.0. If the coefficient was negative, it would represent a negative correlation, indicating that as the size of the house increases, the price tends to decrease.
+d) The residual represents the difference between the actual selling price of the house and the predicted selling price. In this case, the residual of $300,000 - $240,200 = $59,800 indicates that the actual selling price of the 3000-square-foot house is $59,800 higher than what the model predicted. This means that the house sold for more than what was expected based on its size and the regression equation.
+
+# Problem 3.61
+a) Explanatory Variable: Number of square feet in the house.
+Response Variable: Assessed value of the house.
+b) Explanatory Variable: Gender.
+Response Variable: Political party preference.
+c) Explanatory Variable: Number of years of education.
+Response Variable: Annual income.
+d) Explanatory Variable: Type of diet.
+Response Variable: Number of pounds lost.
+
+# Problem 3.63
+Total number of males that participated in the survey: 808.
+Total number of females that participated in the survey: 979.
+a) Males: 
+    621/808 = 0.77
+    187/808 = 0.23
+  Females:
+    834/979 = 0.85
+    145/979 = 0.15
+b) There isn't a substantial difference between the responses of males and females. In the survey, 77% of males indicated that they believe in life after death, which is only 8 percentage points less than the female responses at 85%. The ratio of proportions, calculated as 0.85 / 0.77 = 1.1, indicates that these two variables are not strongly associated because their proportions are nearly identical (close to 1).
+This means that, based on the data, there doesn't appear to be a significant difference in beliefs about life after death between males and females, as the proportions of believers are quite similar.
+
+# Problem 3.70
+a) (i) - b
+   (ii) - c
+   (iii) - a
+b) There is a negative association between the amount of dust and the amount of rainfall. As the amount of dust decreases, the amount of rainfall also tends to decrease. This negative relationship can be visualized on charts and is supported by the negative coefficients in regression equations, which are -7.18, -2.36, and -9.77.
+
+# Problem 3.83
+a) The intercept of the regression equation, when the unit is changed to euros (when 1 euro = 1.25 dollars), will be calculated by dividing the original intercept of -20,000 dollars by the exchange rate -20,000 dollars / 1.25 dollars per euro = -16,000 euros.
+b) The slope, represented by the coefficient of 4000, remains the same because it represents the rate of change of the response variable for a one-unit change in the explanatory variable. The relationship between the two variables remains consistent, regardless of the units in which they are measured.
+c) Correlation will remain 0.50 even when annual income is measured in euros because it does not depend on variables' units,  it solely depends on the underlying relationship between the variables.

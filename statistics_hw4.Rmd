@@ -1,0 +1,339 @@
+---
+title: "Stats Homework 4"
+author: "Hanna Butsko"
+date: "2023-09-19"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Reading the file and assigning values
+```{r}
+library(readr)
+library(dplyr)
+
+setwd("/Users/annabutko/Desktop/NCF/Semester_1/Statistics/Homework")
+crime_data <- read.csv("fl_crime.csv", header=TRUE)
+crime <- crime_data$crime.rate..per.1000.
+education <- crime_data$education....
+```
+
+# Problem 1
+3) Fitting a linear regression model
+```{r}
+linear_regression <- lm(crime ~ education, data = crime_data)
+
+intercept <- coef(linear_regression)[1]
+slope <- coef(linear_regression)[2]
+
+equation <- paste("Fitted equation: crime =", round(intercept, 2), "+", round(slope, 2), "* education")
+print(equation)
+```
+
+R^2 is interpreted as the percentage of the variability in the response variable that can be explained by the linear relationship between x and y. In our case, R^2 is approximately 21.8%. This means we can use this percentage to assess the accuracy of our regression equation. The larger the value of R^2, the more accurate our predictions resulting from the regression equation. For example, when r = 1 (indicating a strong correlation) - R^2 will be 100%. Conversely, when r = 0 (indicating no correlation) - R^2 will be 0%. In our example, R^2 can be interpreted as indicating that 21.8% of the variability in education can be attributed to the linear relationship between education and crime."
+```{r}
+r_squared_percentage_1 <- round(summary(linear_regression)$r.squared * 100, 1)
+print(paste("R^2 =", r_squared_percentage_1, "%"))
+```
+
+4) Calculating R^2
+```{r}
+# Function to calculate sum of squares of residuals sum((y - y.hat)^2)
+residual_sum_of_squares <- function(linear_regression, crime){
+  residual_sum <- 0
+  y.hat = predict(linear_regression)
+  n <- length(crime)
+  for (i in 1:n){
+    residual_sum <- residual_sum + (crime[i] - y.hat[i])^2
+  }
+  return(residual_sum)
+}
+
+# Fucntion to calculate total sum of squares sum((y - y.mean)^2)
+total_sum_of_squares <- function(crime){
+  total_sum <- 0
+  mean_y <- mean(crime)
+  for (y in crime){
+    total_sum <- total_sum + (y - mean_y)^2
+  }
+  return(total_sum)
+}
+
+# Calculating r^2 by dividing sum of squares of residuals by total sum of squares
+r_squared <- 1 - (residual_sum_of_squares(linear_regression, crime) / total_sum_of_squares(crime))
+r_squared_percentage_2 <- round(r_squared * 100, 1)
+
+print(paste("R^2 =", r_squared_percentage_2, "%"))
+```
+
+Double check for correctness
+```{r}
+if (r_squared_percentage_1 == r_squared_percentage_2){
+  print("Function developped by the student returns the same result as R's built in r^2 function.")
+} else{
+  print(paste("Function developped by the student does not return the same result as R's built in r^2 function."))
+}
+```
+
+5) Calculating the predicted crime rate for education level 70
+```{r}
+calculate_y.hat <- function(linear_regression, x){
+  intercept <- coef(linear_regression)[1]
+  slope <- coef(linear_regression)[2]
+  
+  return(intercept + slope * x)
+}
+x <- 70
+print(paste("When education level increases to 70, the regression model predicts an average crime rate of approximately", round(calculate_y.hat(linear_regression, x))))
+```
+
+Calculating the predicted crime rate for education level 35
+```{r}
+x <- 35
+print(paste("When education level increases to 35, the regression model predicts an average crime rate of approximately", round(calculate_y.hat(linear_regression, x))))
+```
+
+The main issue affecting our trust in these predicted values is the limited predictive power of the model. The R^2 value of 21.8 % indicates that our regression model accounts for only 21.8 % of the variability in the crime rate based on the education level, leaving a substantial portion of the variability unexplained. The low R^2 value suggests that there are likely other important factors or variables that influence crime rates but are not considered in the current model. Therefore, these predictions should not be relied upon as accurate representations of real-world outcomes.
+
+# Problem 2
+Reading the file and assigning values
+```{r}
+broadband_data <- read.csv("broadband_data.csv", header=TRUE)
+broadband <- broadband_data$Broadband
+GDP <- broadband_data$GDP
+```
+
+1) Plotting the number of broadband subscribers against GDP
+```{r}
+library(ggplot2)
+library(hrbrthemes)
+
+ggplot(broadband_data, aes(x = GDP, y = broadband)) +
+  geom_point() +
+  geom_smooth(method = "lm", color = "red", fill = "grey", se = TRUE) +
+  ylab('broadband') +
+  xlab('GDP') +
+  theme_minimal()
+```
+
+Calculating the correlation
+```{r}
+correlation <- cor(broadband, GDP)
+print(paste("r =", round(correlation, 1)))
+```
+
+The correlation result of 0.8 indicates a fairly strong correlation between the variables broadband and GDP. However, when examining the scatterplot, it's important to observe that most of our data points cluster in the lower-left corner, with a few extreme values in the upper-right corner of the plot. It's crucial to understand that when interpreting such a plot, the presence of extreme outliers can pull the regression line toward them, potentially providing false information about the true correlation between the variables. Because of this, it's always a good idea to fit the data without those outliers and assess how well the resulting line predicts results for the rest of the data.
+
+2) Fitting a linear regression model
+```{r}
+linear_regression_2 <- lm(broadband ~ GDP, data = broadband_data)
+linear_regression_2
+```
+
+a) Fitted equation
+```{r}
+intercept_2 <- coef(linear_regression_2)[1]
+slope_2 <- coef(linear_regression_2)[2]
+
+print(paste("Fitted equation: broadband =", round(intercept_2, 2), "+", round(slope_2, 2), "* GDP"))
+```
+
+b) Understanding what the intercept means in this situation can be a bit tricky. The intercept suggests that, on average, when we have zero GDP, the estimated broadband is about 1,292,550.82. But this doesn't really make sense in the real world because having zero GDP means is not realistic. So, it's hard to say exactly what the broadband would be with no GDP However, we can maybe trust this number more for countries that have weak economies and don't depend only on GDP for their money. In those cases, this number could give us a rough idea of where to start when estimating broadband.
+
+c) Interpreting the slope in this context means that, on average, for every one-unit increase in GDP, we can expect the broadband usage to increase by approximately 8,188.75 units, assuming all other factors remain constant. The slope provides insight into the strength and direction of the relationship between broadband and GDP. In this case, a positive slope indicates that, on average, as GDP increases, the model predicts an increase in broadband usage, suggesting a positive correlation between the two variables.
+
+d) Calculating R^2 value
+```{r}
+r_squared_percentage <- round(summary(linear_regression_2)$r.squared * 100, 1)
+print(paste("R^2 =", r_squared_percentage, "%"))
+```
+R^2 indicates the variability that can be explained by the linear relationship between broadband and GDP values. The larger the value of R^2, the more accurate our predictions resulting from the regression equation will be. In our case, r^2 = 59.4 %, indicating that approximately 59.4 % of the variability in broadband can be accounted for by the linear relationship with GDP. This suggests a relatively strong relationship between the variables broadband and GDP.
+
+3) Identifying the outliers
+```{r}
+country <- broadband_data$Country
+
+ggplot(broadband_data, aes(x = GDP, y = broadband)) +
+  geom_point() +
+  geom_smooth(method = "lm", color = "red", fill = "grey", se = TRUE) +
+  geom_text(aes(label = Country), vjust = -0.5, hjust = 0.5) +
+  ylab('broadband') +
+  xlab('GDP') +
+  theme_minimal()
+```
+
+From the plot above we can clearly observe that our two main regression outliers are United States and China.
+
+a) Recalculating the correlation excluding the outliers
+```{r}
+subset_data <- subset(broadband_data, Country != "China" & Country != "United States")
+new_broadband <- subset_data$Broadband
+new_GDP <- subset_data$GDP
+new_linear_regression <- lm(new_broadband ~ new_GDP, data = subset_data)
+new_linear_regression
+```
+
+Calculating the correlation
+```{r}
+new_correlation <- cor(new_broadband, new_GDP)
+print(paste("r =", round(new_correlation, 1)))
+```
+
+```{r}
+ggplot(subset_data, aes(x = new_GDP, y = new_broadband)) +
+  geom_point() +
+  geom_smooth(method = "lm", color = "red", fill = "grey", se = TRUE) +
+  ylab('Broadband') +
+  xlab('GDP') +
+  theme_minimal()
+```
+
+After removing potential outliers, our correlation coefficient increased by 0.1, indicating a stronger relationship between the broadband and GDP variables. As mentioned earlier, severe outliers have the potential to distort the correlation coefficient and provide misleading insights about the relationship. In this particular instance, the outliers did not have a significant impact on our correlation, but we did observe a slight improvement when they were excluded from the analysis.
+
+b) Refitting the linear regression excluding the outliers
+```{r}
+new_intercept <- coef(new_linear_regression)[1]
+new_slope <- coef(new_linear_regression)[2]
+
+print(paste("Fitted equation: broadband =", round(new_intercept, 2), "+", round(new_slope, 6), "* GDP"))
+```
+
+The number 6835.970064 in this equation tells us that, on average, if GDP increases by one unit, broadband is expected to go up by 6835.970064 units. This is different comparing to the original equation we had, where a one-unit increase in GDP led to a 8188.75 increase in broadband. The difference we see here shows how outliers can affect our calculations. When we remove outliers, we get a more accurate and dependable idea of how broadband and GDP are related because we're not being thrown off by those unusual data points.
+However, it's important to be cautious and think carefully. We need to figure out if the outliers happened because of mistakes in how the data was collected or if they represent real and meaningful observations. If the outliers are just mistakes, then it makes sense to trust the new equation more. But without knowing more about the data and how the outliers happened, it's hard to say for sure whether it's right to exclude them and use the new equation.
+
+4) Regression line with and without outliers
+```{r}
+ggplot(data = broadband_data, aes(x = GDP, y = broadband)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE, col = "red", linetype = "solid", linewidth = 0.5) + 
+  geom_abline(intercept = new_linear_regression$coefficients[1], slope = new_linear_regression$coefficients[2], col = "blue", linetype = "solid") +
+  ylab('Broadband') +
+  xlab('GDP') +
+  theme_minimal()
+```
+
+In the scatterplot above, we can visualize two regression lines: the red line includes outliers, while the blue line excludes two outliers: China and the United States. The significant contrast in the direction of the linear regression lines based on these changes is evident. As previously mentioned, excluding outliers resulted in an improvement in our correlation coefficient. Now, through visualization, we can clearly observe how extreme outliers have the potential to distort the regression line and lead it in a different direction.
+
+# Problem 3
+1) Subdividing urbanization variable into three groups
+```{r}
+urbanization <- crime_data$urbanization....
+
+urbanization.categorized <- cut(
+  urbanization,
+  breaks = c(-Inf, 33, 66, 100),
+  labels = c("<= 33", "(34, 66]", "(66, 100]"),
+  right = TRUE
+)
+
+grouped_data <- split(crime_data, urbanization.categorized)
+```
+
+2) Plots of crime rate against education for each urbanization group
+```{r}
+for (group in names(grouped_data)){
+  group_data <- grouped_data[[group]]
+  education <- grouped_data[[group]]$education....
+  crime <- grouped_data[[group]]$crime.rate..per.1000.
+  
+  lm_model <- lm(crime ~ education, data = group_data)
+  intercept <- round(coef(lm_model)[1], 2)
+  slope <- round(coef(lm_model)[2], 2)
+  r_squared <- round(summary(lm_model)$r.squared, 2)
+  
+  if (slope > 0) {
+  sign <- "+"
+  } else {
+    sign <- "-"
+  }
+  
+  plot <- ggplot(data = group_data, aes(x = education, y = crime)) +
+    geom_point() +
+    geom_smooth(method = "lm", se = FALSE, color = "blue") +
+    ylab('Crime Rate') +
+    xlab('Education') +
+    ggtitle(paste(" Urbanization Group:", group, "\n", "Regression Equation: crime=", intercept, sign, abs(slope), "* education", "\n", "R^2 =", r_squared)) +
+    theme_minimal()
+  print(plot)
+}
+```
+
+b) Calculating the correlation between crime rate and eduction for each urbanization group
+```{r}
+for (group in names(grouped_data)){
+  group_data <- grouped_data[[group]]
+  education <- grouped_data[[group]]$education....
+  crime <- grouped_data[[group]]$crime.rate..per.1000.
+  
+  correlation = cor(education, crime)
+  print(paste("Correlation coefficient for Urbanization Group", group, "is", correlation))
+}
+```
+
+3) For the urbanization group <= 33:
+
+Original full data equation: `crime = -50.86 + 1.49 * education`.
+Group-specific equation: `crime = -17.41 + 0.82 * education`.
+Both equations have positive slopes, indicating that, on average, as education level increases, the crime rate tends to go up. However, the slope for the full data is steeper, suggesting a stronger positive relationship. The correlation for this group is weaker (r = 0.17) compared to the overall dataset (r = 0.46), indicating a weaker relationship in this group.
+ 
+For the urbanization group (34, 66]:
+
+Original full data equation: `crime = -50.86 + 1.49 * education`.
+Group-specific equation: `crime = 98.81 - 0.72 * education`.
+The group-specific equation has a negative slope, implying that, on average, as education level increases, the crime rate tends to decrease. This aligns with the negative correlation (r = -0.41) observed for this group. It's the opposite direction compared to the overall dataset, where education was positively associated with crime.
+ 
+For the urbanization group (66, 100]:
+
+Original full data equation: `crime = -50.86 + 1.49 * education`.
+Group-specific equation: `crime = 118.34 - 0.58 * education`.
+The group-specific equation also has a negative slope, indicating a negative relationship between education and crime in this group. However, the correlation (r = -0.12) is weaker than in the previous group, suggesting a weaker relationship.
+In summary, when accounting for urbanization, the direction of the crime-education relationship shifts at different urbanization levels. The correlations vary across urbanization groups, with some showing weaker relationships than observed in the overall dataset. After considering urbanization, we cannot conclusively state that as education level increases, the crime rate does too. This phenomenon underscores the profound impact of lurking or confounding variables on perceived associations. An association can appear significantly different after adjusting for the influence of a third variable, a scenario known as Simpson's Paradox. This emphasizes the significance of accounting for contextual factors, such as urbanization, in data analysis.
+
+4) When two explanatory variables are both associated with the response variable and are also associated with each other, confounding occurs. This phenomenon makes it challenging to determine whether either of these variables genuinely causes the response because the effect of a variable may, at least in part, be influenced by its association with the other variable.
+In our analysis of the crime-education relationship, the urbanization variable plays the role of a 'confounding variable.' This is because urbanization has the potential to confound or influence the observed relationship between education and crime. Urbanization is not only associated with crime rates but also with educational levels, creating a complex interplay of factors.
+Urbanization's status as a confounder means that it can introduce bias or distortion into our analysis if not properly considered. Therefore, when studying the relationship between education and crime, it is essential to account for the confounding influence of urbanization to ensure accurate and meaningful conclusions about the factors driving crime rates.
+
+5) Regression equation for urbanization group (66, 100]:
+Since the equation has already been calculated earlier, I will not repeat the code but will provide the answer for interpretation.
+Linear Regression Equation = crime = 118.34 - 0.58 * education
+Intercept = 118.34
+Slope = -0.58
+R^2 = 0.01 or 10 %
+Intercept:
+The intercept in this equation is 118.34. It suggests that when education is at zero, the crime rate is 118.34, on average. However, interpreting this intercept in practical terms may not be meaningful because it implies a scenario where there is no education, which is unrealistic. Additionally, the R^2 value for this group is low (0.01 or 10%), indicating that the linear relationship between education and crime explains only a small portion of the variability in crime rates within this urbanization group.
+Slope:
+The slope in the equation is -0.58. This negative slope indicates that, on average, as the level of education increases within this urbanization group, the crime rate tends to decrease. However, it's important to note that the slope is relatively small, suggesting a weak linear relationship between education and crime within this group. 
+R^2:
+The R^2 value for this group is 0.01 or 10%. This R^2 value indicates that only a small fraction (10%) of the variability in crime rates can be explained by the linear relationship with education within this urbanization group. This low R^2 suggests that other factors not included in the model have a more significant influence on crime rates within this specific urbanization range.
+In summary, while the linear regression equation provides insights into the relationship between education and crime within the urbanization group (66, 100], the intercept may not be practically interpretable, and the R^2 value suggests that the linear model explains only a small portion of the variability in crime rates within this group. The negative slope indicates a weak negative relationship between education and crime in this context.
+
+6) The only influential observation I identified is within the urbanization group (66, 100], and it corresponds to the data point located in the upper-left corner of the plot. While the majority of the data points in this group appear to exhibit a nearly zero correlation, possibly forming a nearly straight line or displaying a slight positive linear relationship, this particular observation in the extreme upper-left corner has the potential to significantly influence the direction of our regression line. In this context, it could be a contributing factor to the observed negative slope.
+Dealing with influential observations in statistical analysis is important to ensure that these observations do not unduly influence the results of your analysis. The first and most important step in dealing with influential observations is to identify them. Secondly, we need to investigate why these observations are influential. Are they genuine data points or outliers? Understanding their context is crucial. Thirdly, we must choose a way to handle these influential observations. Some of the options for handling these observations include using Weighted Least Squares (WLS), transforming variables, data trimming, data transformation, and many more. However, if influential observations are identified as outliers and their influence is not representative of the underlying data, we could consider removing them, as demonstrated in the previous example with broadband and GDP, and reevaluate our results without the influence of these influential observations. However, we must do this cautiously and with a clear rationale.
+
+# Problem 4
+3.91
+
+a) The study that investigated the relationship between two variables, height and income, and found a positive correlation between them may have been affected by a lurking variable - gender. On average, men tend to be taller than women, and, on average, men tend to earn higher incomes than women. There is a noticeable correlation between gender and both height and average income. Therefore, it becomes evident that gender could potentially act as a lurking variable, influencing both the explanatory variable (height) and the response variable (income).
+b) In this scenario, it's important to note that gender was not taken into account or measured in the study. However, it holds the potential to act as a confounding variable. If gender were included in the study and demonstrated associations with both the response and explanatory variables, it would indeed become a confounding variable. As a result, it could significantly influence or confound the relationship between the response and explanatory variables.
+
+3.92
+
+a) Yes, a negative correlation suggests that, as one variable increases, the other tends to decrease. In the context of this study, a negative correlation would imply that, on average, as the explanatory variable (per capita television ownership) increases, the response variable (the birth rate) decreases.
+b) In the context of the study, a lurking variable could be socioeconomic development. Regions or countries with higher levels of socioeconomic development tend to have more access to education and family planning services. They also often have lower birth rates due to factors such as increased education and awareness about family planning. Similarly, higher levels of socioeconomic development are also associated with greater access to modern amenities, including television ownership.
+So when studying these two variables—television ownership and birth rate—there may appear to be a positive correlation. However, the lurking variable, socioeconomic development, explains this correlation. Regions with higher socioeconomic development tend to have both higher television ownership and lower birth rates. So, while television ownership and birth rate may appear correlated, it's actually the underlying factor of socioeconomic development that's influencing both variables.
+
+4.2
+
+a) Since subjects were identified and followed for two decades without any experimental manipulation or intervention, I would classify this as an observational study rather than an experimental study.
+b) Explanatory Variable: High blood pressure in combination with binge drinking.
+Response Variable: Risk of death from stroke or a heart attack.
+c) No, it is not possible to definitively establish cause and effect in an observational study. There is always a possibility that some lurking variable could be responsible for the observed association. Therefore, while observational studies can suggest relationships and associations, they cannot prove causal relationships with absolute certainty.
+
+4.3
+
+a) Explanatory variable: Low-carb or low-fat diet.
+Response variable: Effect of the diet on weight loss.
+b) This study was experimental as the subjects were divided into groups and randomly assigned to a specific experimental condition, in this case, a low-carb or low-fat diet. Subsequently, outcomes were observed for the response variable, which is weight loss.
+c) It would not be appropriate to recommend that everyone should follow a low-carb diet over a low-fat diet solely based on the results of this one study. While the study suggests a stronger association between a low-carb diet and weight loss compared to a low-fat diet, it's important to acknowledge that various other variables could have influenced the study's results. These variables might include overall health, levels of physical activity, socioeconomic status, stress, age, and more. To make a recommendation that everyone who wishes to lose weight should prefer a low-carb diet, we would need to account for and carefully analyze all these potential influential variables.

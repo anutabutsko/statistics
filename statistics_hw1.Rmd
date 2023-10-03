@@ -1,0 +1,189 @@
+---
+title: "Stats_Homework_1"
+author: "Hanna Butsko"
+date: "2023-09-04"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(readr)
+```
+
+# Reading csv fl_student_survey file
+```{r}
+fl_data <-
+  read.csv("http://sites.williams.edu/bklingen/files/2015/07/fl_student_survey.csv")
+```
+
+# Categorical Variable selected: life_after_death.
+# This variable takes on three categories: "yes", "no" and "unsure".
+# Pulling up the data:
+```{r}
+fl_data$life_after_death
+```
+
+# NUMERICAL SUMMARIES of life_after_death variable.
+# Summarizes how many participants of the survey answered: "yes", "no" or "unsure".
+```{r}
+table(fl_data$life_after_death)
+```
+
+# This block provides the same information presented in percentage ratios. Roughly 21 % of students answered "no", 51 % answered "yes", and 26 % answered "unsure". This statistic shows that 51 % of Florida student survey participants believe in life after death.
+```{r}
+life_after_death.percentage <- round(table(fl_data$life_after_death)/length(fl_data$life_after_death)
+                                     *100, digits=1)
+life_after_death.percentage
+```
+
+# GRAPHICAL SUMMARIES
+# Simple chart showing the comparison of how many participants of the survey answered: "yes", "no" or "unsure".
+```{r}
+barplot(table(fl_data$life_after_death))
+```
+
+# Pretty chart comparing by percentage:
+```{r}
+barplot(table(fl_data$life_after_death)/length(fl_data$life_after_death)*100,
+        names.arg = c('No', 'Unsure', 'Yes'),
+        ylab="Percentage",
+        main="Bar Graph of Student Survey: Life after Death",
+        col = c("red", "green", "yellow"))
+```
+
+# Pie chart NOT RECOMENDED TO USE
+```{r}
+lables = c('No', 'Unsure', 'Yes')
+
+pie(table(fl_data$life_after_death),
+    labels = paste(as.numeric(life_after_death.percentage), "%", "\n", lables),
+    cex=0.9,
+    main="Bar Graph of Student Survey: Life after Death")
+```
+
+# Quantitative Variable selected: college_GPA
+# This is a continuous variable because it is not a whole number. GPA can have many possible decimal values in range 0.0 - 4.0.
+```{r}
+fl_data$college_GPA
+```
+
+# College GPA data broken down into four categories based on GPA: "2 - 2.5", '2.5 - 3',"3 - 3.5", "3.5 - 4". There were no students that reported GPA below 2, so, for space saving purposes, we will assume that the lowest GPA possible in our data analysis is 2.
+```{r}
+college_GPA.categorized <- cut(fl_data$college_GPA, breaks=c(2,2.5,3,3.5,4))
+table(college_GPA.categorized)
+```
+
+# Comparing by percentage:
+```{r}
+college_GPA.percentage <- round(table(college_GPA.categorized)/length(fl_data$college_GPA)*100, digits=2)
+college_GPA.percentage
+```
+
+# GRAPHICAL SUMMARIES
+# Following histogram portrays distribution of college students' GPA.
+# The chart has two peaks, showing that most frequesnt GPA values among Florida student survey participants are: 2.9 and 3.5.
+```{r}
+hist(fl_data$college_GPA,
+  main="College GPA by Number of Students",
+  xlab="GPA",
+  col="darkmagenta",
+  ylim = c(0,15),
+  ylab = 'Number of Students',
+  breaks = 15
+)
+```
+
+# ## We did not cover quantitative graphical summaries in class, so, when I started working on this homework, I created barcharts for this section. I later realized that barcharts are mostly used for categorical data. I am submitting these just because I have them done.
+
+# Following bar chart provides distribution of college GPA among fl student survey participants by percentage, grouped into 4 groups: "2 - 2.5", '2.5 - 3',"3 - 3.5", "3.5 - 4" - 2 being the lowest GPA and 4 being the highest.
+```{r}
+barplot(college_GPA.percentage,
+        main = "College GPA by Percentage",
+        ylab = "Percentage",
+        xlab = "GPA",
+        names.arg = c("2 - 2.5", '2.5 - 3',"3 - 3.5", "3.5 - 4"),
+        ylim= c(0,100),
+        col = c("#eb8060", "#b9e38d", "#a1e9f0", "#d9b1f0"))
+```
+
+# Bar chart providing comparison of college GPA by number of students:
+```{r}
+barplot(table(college_GPA.categorized),
+        main = "College GPA by Number of Students",
+        ylab = "Students",
+        xlab = "GPA",
+        names.arg = c("2 - 2.5", '2.5 - 3',"3 - 3.5", "3.5 - 4"),
+        ylim= c(0, 30),
+        col = "darkred")
+```
+
+# Extra chart - provides information with exact percentage above each bar:
+```{r}
+sample_data <- data.frame(GPA = c("2 - 2.5", '2.5 - 3',"3 - 3.5", "3.5 - 4"),
+                          Percentage = as.numeric(college_GPA.percentage))
+library("ggplot2")
+ggplot(sample_data,
+        aes(GPA,Percentage)) +
+        geom_bar(stat = "identity")+
+        geom_text(aes(label = "%"), nudge_y = 1) + 
+        geom_text(aes(label = signif(Percentage)), nudge_y = 3) 
+```
+
+```{r}
+# Problem 1.7
+```
+
+# a) Sample: 3077 people who responded to the survey.
+# b) Population: "General Social survey" - could be the whole population of the United Sates.
+# c) 23 % of people said that anti religious books should be removed from the library.
+
+```{r}
+# Problem 1.8
+```
+
+# a) Sample: 1200 Floridians. Population: All Florida residents.
+# b) Statistics - because the percentages provided represent the sample(1200 Floridians). If poll had reported: "Based on the results of the survey, 40 % of the United States population is concerned with global warming", that would have been the parameter - because it is based on the entire population.
+
+```{r}
+# Problem 1.9
+```
+
+# a) Subject: every student in the program of interest.
+# b) Sample: few students from that program.
+# c) Population: entire class.
+
+```{r}
+# Problem 1.10
+```
+
+# a) Samples: random sample of citizens from different countries.
+# b) Based on my understanding, that would be statistics. Because it says "In the most recent poll" and then provides the results of that poll. If that piece was excluded and the sentence started with "74 % of Africans felt globalization helps their country...", then I would say that this is a parameter.
+
+```{r}
+# Problem 1.10
+```
+
+# a) Samples: random sample of citizens from different countries.
+# b) Based on my understanding, that would be statistics. Because it says "In the most recent poll" and then provides the results of that poll. If that piece was excluded and the sentence started with "74 % of Africans felt globalization helps their country...", then I would say that this is a parameter.
+
+```{r}
+# Problem 2.3
+```
+
+# a) Quantitative Discrete
+# b) Categorical
+# c) Categorical
+# d) Quantitative Continuous
+
+```{r}
+# Problem 2.6
+```
+
+# a) Continuous
+# b) Discrete
+# c) Continuous
+# d) Discrete
+

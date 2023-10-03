@@ -1,0 +1,191 @@
+---
+title: "Statistics Homework 2"
+author: "Hanna Butsko"
+date: "2023-09-09"
+output: pdf_document
+---
+```{r}
+library(ggplot2)
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Reading fl_student_survey.csv file
+```{r}
+fl_data <-
+read.csv("http://sites.williams.edu/bklingen/files/2015/07/fl_student_survey.csv")
+```
+
+# Quantitative variable chosen
+```{r}
+distance <- fl_data$distance_residence
+distance
+```
+
+# The best known and the most frequently used measure of the center of the distribution of a quantitative variable is the mean - average
+```{r}
+mean(distance)
+```
+
+# Another popular measure of the center is the median - the middle value
+```{r}
+median(distance)
+```
+
+# Method #1 to describe variability of the data - The Range.
+Range is the difference between the largest and the smallest observations.
+There are more disadvantages than advantages of using range to measure the variability of the distribution. The advantage of using range is that it is simple to compute and easy to understand. It also could be a good practice to mention the largest and the smallest values of the distribution. The disadvantages: range only uses extreme values and ignores other values; it is severely affected by outliers which makes it not a resistant statistic. Overall, range shares the worst property of mean - not being resistant, and the worst property of median - ignoring the values of nearly all the data.
+```{r}
+max(distance) - min(distance)
+```
+
+# Method #2 to describe variability of the data - The Standard Deviation.
+The standard deviation is a much better numerical summary of variability because it uses all the data and it take in account the distance of how far the data falls from the mean. The disadvantage of this measure of variability is that it can also be greatly influenced by outliers.
+The standard deviation is more informative than the range. In our dataset, by examining the standard deviation, we can observe that one standard deviation away from the mean to the left corresponds to values less than zero. This indicates that the majority of the data is located on the left side of the distribution, potentially with some outliers on the right. In contrast, the range solely informs us about the gap between the largest and smallest values, disregarding the remainder of the data's distribution.
+```{r}
+sd(distance)
+```
+
+Following plot provides five-number summary for measures of position. The central box goes from the lower quartile Q1 to the upper quartile Q3, showing that majority of the survey participants live within 2 - 5 miles away from the college. The black line in the box marks the median, which we already calculated: 2. Whiskers extend from the box to the smallest and largest observations, which are not identified as potential outliers. Whiskers go out up to interquartile range multiplied by 1.5. The outliers in this dataset fall outside the right whisker's range. We can note that there are three outliers. If we were to illustrate the skew, this distribution would be skewed to the right, with longer right tail.
+Overall, a box plot is highly visually effective. It allows us to see clear summary of the data, such as distribution of results, symmetry within the data, and outliers. However, the box plot is based on median and quartiles rather than mean and standard deviation. It is best used to compare data that isn't normally distributed. If we want to assess whether data is normally distributed, visual examination of a histogram is more informative than a box and whiskers plot.
+```{r}
+print(summary(distance))
+boxplot(distance,
+  horizontal = TRUE,
+  main="Residential Distance of Florida Survey Participants",
+  xlab="Miles",
+  col="orange")
+```
+
+# Problem 2.21
+Because there is no actual data provided, I will assume that this problem is asking for subjective opinion and will provide explanation for my answers.
+
+a) Few homes with extremely high assessed value result could be potential outliers in the dataset. Because values are extremely high, they would be located to the right of the x axis, extending the tail to the right. The histogram of such dataset would be skewed to the right.
+
+b) I would assume, from my personal experience with checking accounts, it's unlikely that many individuals would allow their accounts to go into overdraw. This is because doing so can lead to additional complications, such as incurring late fees. If a significant number of students had their accounts overdrawn rarely or not at all, the graph would have a right-skewed distribution. In this scenario, the majority of data points would cluster to the left, with a few outliers extending to the right.
+
+c) According to the information I fount online, the distribution of IQ scores within the general population appears to be fairly symmetrical If we were to create a graphical representation, it would likely take the form of a bell-shaped curve, with only a minimal presence of extreme outliers.
+
+d) Just like the previous question, I believe that the height distribution of female college students, when plotted on a graph, would exhibit a bell-shaped curve. It's possible that there could be a few outliers on the left, representing exceptionally short students, and a few on the right, representing exceptionally tall students. However, the overall shape of the distribution would be symmetrical.
+
+# Problem 2.34
+If we were to conduct a survey that queried every employee in the company about their annual salaries and compiled the data into a dataset, we would likely observe an unequal distribution of numbers. This disparity arises because the majority of employees earn lower salaries, comparing to a select few in higher-paying roles, such as management and executive positions. When we visualize this data using a histogram, we would notice a right-skewed distribution, with the majority of employees on the left side representing smaller salaries and a few outliers on the right side with higher incomes.
+Based on this observation, it becomes evident that the median salary would be lower than the mean. Consequently, management may prefer to emphasize the mean salary to present a more favorable picture, while employees would advocate for the median salary to demonstrate that the majority of them do not earn as much as management is trying to convey.
+
+# Problem 2.37
+```{r}
+data <- c(0, 0, 4, 0, 0, 0, 10, 0, 6, 0)
+
+mean.func <- function(data){
+  return(sum(data)/length(data))
+}
+
+
+median.func <- function(data){
+  middle <- ceiling(length(data)/2)
+  if (length(data) %% 2 != 0){
+    return(sort(data)[middle])
+  } else{
+    return((sort(data)[middle] + sort(data)[middle+1])/2)
+  }
+}
+
+
+mode.func <- function(data){
+  data.mode <- {}
+  for (num in data){
+    if (num %in% names(data.mode)){
+      data.mode[[as.character(num)]] <- data.mode[[as.character(num)]] + 1
+    } else{
+      data.mode[[as.character(num)]] <- 1
+    }
+  }
+  return(names(data.mode)[which.max(data.mode)])
+}
+
+
+print(paste("Mean:", mean.func(data)))
+print(paste("Median:", median.func(data)))
+print(paste("Mode:", mode.func(data)))
+```
+
+# Problem 2.46
+a) The range is the difference between the largest and the smalles observations. In this case the range equals to 6.
+```{r}
+sick_employees.data <- c(0, 0, 4, 0, 0, 0, 6, 0)
+
+range.func <- function(data){
+  return(max(data) - min(data))
+}
+
+
+print(paste("Range:", range.func(sick_employees.data)))
+```
+
+b) A much better numerical summary of variability uses all the data, describing a typical distance of how far the data falls from the mean. The summary of these deviations is called the standard deviation. In our case, the standard deviation amounts to 2.37547, or approximately 2.4 when rounded. As previously discussed in this assignment, I have already highlighted the advantages and disadvantages of both the range and standard deviation. This example once again underscores the substantial differences between these two measures. The range fails to offer a comprehensive perspective and overlooks all values apart from the minimum and maximum.
+```{r}
+SD.func <- function(data){
+  data.mean <- mean.func(data)
+  s <- 0
+  for (num in data){
+    s = s + (num - data.mean)^2
+  }
+  standard_deviation.data <- (s / (length(data) - 1))^(1/2)
+  return(standard_deviation.data)
+}
+
+print(paste("Standard deviation:", SD.func(sick_employees.data)))
+```
+
+c) We can clearly see a significant difference in both the range and standard deviation when we change a single value within our dataset. The selected number serves as an outlier, highlighting the sensitivity of both the range and standard deviation to outliers. The range calculation relies on the maximum and minimum values, and in this instance, changing the maximum value to 60 has a substantial impact on the range. Similarly, the standard deviation is affected for two primary reasons. Firstly, it incorporates the mean, which we already know can be strongly influenced by outliers. Secondly, it calculates squared deviations, which have the capability to substantially increase or diminish the resulting value.
+```{r}
+sick_employees.new_data <- c(0, 0, 4, 0, 0, 0, 60, 0)
+
+print(paste("Range:", range.func(sick_employees.new_data)))
+print(paste("Standard deviation:", SD.func(sick_employees.new_data)))
+```
+
+# Problem 2.54
+a) If a distribution of data is bell shaped, we can use imperical rule to form intervals that contain certain percentages of the data. In this case, with mean = 133 and SD = 17, 95 % of the data falls within 2 standard deviations of the mean, which is between 99 and 167.
+
+b) The answer is 185. I wouldn not classify this as an unusual observation. Firstly, it's just one point outside the range of three standard deviations. Secondly, a weight of 185 pounds wouldn't be considered abnormal for a tall and healthy athlete.
+```{r}
+athletes.data <-
+  read.csv("https://img1.wsimg.com/blobby/go/bbca5dba-4947-4587-b40a-db346c01b1b3/downloads/College_Athletes.csv?ver=1693238277821")
+
+# I assume that TBW is total body weight?
+athletes.weight <- athletes.data$TBW
+for (weight in athletes.weight){
+  if (weight > 184){ # mean 133 + ST 17 * 3 = 184
+    print(weight)
+  }
+}
+```
+
+
+# Problem 2.62
+In the following section of code, we have calculated the median as well as the first and third quartiles. The first quartile is located 5.5 points below the median, while the third quartile is 5 points above the median. These calculations indicate that the data exhibits a reasonably balanced distribution. Additionally, we can infer that within our dataset containing residents from eight countries, 25% take vacations lasting 25 days or fewer per year, 50% go on vacations of 31 days, and 75% embark on vacations lasting 36 days or more.
+```{r}
+vacation.data <- c(42, 37, 35, 34, 28, 26, 25, 13)
+print(paste("Median:", median.func(vacation.data)))
+print(paste("First Quartile:", median.func(sort(vacation.data)[1:4])))
+print(paste("Third Quartile:", median.func(sort(vacation.data)[5:8])))
+```
+
+# Problem 2.66
+a) Range is the difference between the largest and the smallest observations. Unfortunately, there are more disadvantages than advantages of using range to measure the variability of the distribution. The advantage of using range is that it is simple to compute and easy to understand. It also could be a good practice to mention the largest and the smallest values of the distribution. The disadvantages: range only uses extreme values and ignores other values; it is severely affected by outliers which makes it not a resistant statistic. Overall, range shares the worst property of mean - not being resistant, and the worst property of median - ignoring the values of nearly all the data. The standard deviation is a much better numerical summary of variability because it uses all the data and it takes in account the distance of how far the data falls from the mean. The disadvantage of this measure of variability is that it can also be greatly influenced by outliers. The standard deviation is more informative than the range and has better theoretical properties. Averall, the standard deviation is a better choice than the range for understanding data variability, even though it's not perfect.
+
+b) The IQR summarizes the range for the middle half of the data. In certain cases, it's a preferred choice over the range or standard deviation when comparing variability in distributions that are very highly skewed or have severy outliers. This preference arises from the fact that, unlike the standard deviation, the IQR is unaffected by the presence of outliers.
+
+c) The main advantage of standard deviation over IQR is its ability to incorporate every single value in the dataset. It provides a more complete summary of the distribution's variability by taking into consideration how each data point deviates from the sample mean. For example, consider a bimodal data distribution: while the IQR focuses solely on the middle of the data, standard deviation provides a more accurate depiction of the entire dataset's variability, including its multiple modes or unusual features.
+
+# Problem 2.76
+a) IQR = Q3 - Q1 = 5.9
+Calculating 1.5 times the IQR results in a value of 8.85. Potential outliers would fall below 1.3 and above 19.
+The leftmost point on the boxplot would correspond to 4.9, representing the minimum value in the dataset. On the right, the whisker would extend to 19 (median + 1.5 * IQR). Any outliers beyond 19 but not exceeding 27.3 would be indicated with a dot or star on the boxplot.
+
+b) Potential outliers would fall below 1.3 and above 19, and these include Greece with a value of 27.3 and Spain with a value of 26.4.
+
+c) No, according to the standard deviation criterion, Greece would not be classified as an outlier. With a mean of 11.1 and a standard deviation of 5.6, by the calculation of three standard deviations, an outlier would be defined as any value above 27.9. Since Greece has a value of 27.3, which is less than 27.9, it does not meet the criteria to be considered an outlier.

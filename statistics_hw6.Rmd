@@ -1,0 +1,84 @@
+---
+title: "Stats Homework 6"
+author: "Hanna Butsko"
+date: "2023-10-21"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Problem 1
+Part 1
+```{r}
+die_roll <- function(reps, seed){
+  set.seed(seed) 
+  die_6 <- numeric(reps)
+  roll <- sample(1:6, reps, replace=T)
+  for (i in 1:reps){
+    die_6[i] <- mean(roll[1:i] == 6)
+  }
+  print(mean(die_6))
+  plot(die_6, col=4, type="l")
+}
+```
+
+a) Observation for 5 rolls
+After rolling the die 5 times, we obtained a result of 0 indicating that the number 6 did not come up at all in those 5 rolls. This observation highlights that selecting a small number of rolls may not provide an accurate representation of the proportion of times we can expect to roll a 6. Let's now try with a larger number of rolls to get a more reliable estimate.
+```{r}
+die_roll(5, 1)
+```
+
+b) Observation for 100 rolls
+Attempting 100 rolls yields a more accurate proportional estimate comparing to the previous graph. However, it is still challenging to see an exact proportion due to the jumpy nature of the plot. To get a more precise estimation, let's increase the number of rolls even further.
+```{r}
+die_roll(100, 1)
+```
+
+a) Observation for 10000 rolls
+Here, we increased the number of rolls to 10,000. It becomes evident that selecting a larger number of rolls yields improved and clearer results. On the plot, we can observe that as the number of rolls increases, the proportion coefficient stabilizes at approximately 1.67, unaffected by individual die rolls.
+```{r}
+die_roll(10000, 1)
+```
+
+Part 2
+```{r}
+die_roll2 <- function(reps, seed){
+  set.seed(seed)
+  rolls <- numeric(reps)
+  for (i in 1:reps){
+    dice <- sample(1:6, 100, replace=T)
+    counter <- 0
+    for (num in dice){
+      if (num == 6){
+        counter <- counter + 1
+      } else{
+        counter <- 0
+      }
+      if (counter == 3){
+        rolls[i] <- 1
+        break
+      }
+    }
+  }
+  return(rolls)
+}
+
+mean(die_roll2(10000, 1))
+```
+
+
+
+# Problem 2
+5.2
+a) The reason why the friend got a probability of 0.7 for getting heads in a coin flip is because he didn't flip the coin a sufficient number of times. Flipping a coin only 10 times does not provide a realistic probability estimate because it doesn't allow for a statistically significant sample size, which can lead to unreliable results. To obtain a more accurate probability, a larger number of coin flips is essential to reduce the impact of random variation.
+b) As mentioned in part a, it is essential to increase the sample size, in our case the number of coin flips, in order to get closer to the desired probability of 1/2.
+
+5.16
+
+5.30
+
+5.31
+
+

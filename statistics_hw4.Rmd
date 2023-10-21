@@ -13,8 +13,8 @@ Reading the file and assigning values
 ```{r}
 library(readr)
 library(dplyr)
-
-setwd("/Users/annabutko/Desktop/NCF/Semester_1/Statistics/Homework")
+View(crime_data)
+setwd("/Users/annabutko/Documents/R_Projects/statistics/")
 crime_data <- read.csv("fl_crime.csv", header=TRUE)
 crime <- crime_data$crime.rate..per.1000.
 education <- crime_data$education....

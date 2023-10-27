@@ -1,0 +1,109 @@
+---
+title: "Stats Homework 7"
+author: "Hanna Butsko"
+date: "2023-10-27"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# Problem 1
+
+5.23
+a) Possible outcomes: {YS, YN, YD, YN}
+b) -i P(D) = total number of people that died divided by total count of people. 2111 / 577006 = 0.0037
+P(D) = 0.3 %
+```{r}
+2111 / 577006
+```
+
+-ii P(N) = total number of people that were not wearing seatbelt divided by total count of people. 164128 / 577006 = 0.2844
+P(N) = 28 %
+```{r}
+164128 / 577006
+```
+c) For this we would have to find an intersection P(N & D) = 1601 / 577006 = 0.0028
+P(N & D) = 0.3 %
+```{r}
+1601 / 577006
+```
+d) If N and D were independent, then P(N & D) = P(N) * P(D) = (164128 / 577006) * (2111 / 577006) = 0.0010
+Since P(N & D) actually equaled 0.0028, N and D were not independent.
+In context of this data it means that there is dependence between wether a person died in a car accident or no based on if they were wearing a seatbelt or not.
+```{r}
+(164128 / 577006) * (2111 / 577006)
+```
+
+5.27
+a) There are 8 possible outcomes: {YYY, YYN, YNY, YNN, NYY, NYN, NNY, NNN} where Y = sale and N = no sale.
+Based on the information provided, 20 % of the people that enter the shop actually end up buying something. So probability of Y = 0.2 and probability of N = 0.8.
+We can calculate probability of each outcome like so:
+YYY = 0.2 * 0.2 * 0.2 = 0.008
+YYN = 0.2 * 0.2 * 0.8 = 0.032
+YNY = 0.2 * 0.8 * 0.2 = 0.032
+YNN = 0.2 * 0.8 * 0.8 = 0.128
+NYY = 0.8 * 0.2 * 0.2 = 0.032
+NYN = 0.8 * 0.2 * 0.8 = 0.128
+NNY = 0.8 * 0.8 * 0.2 = 0.128
+NNN = 0.8 * 0.8 * 0.8 = 0.512
+b) To find the probability of an event of at least one sale to the three customers, instead of listing all the outcomes that fit that category and sum up their probabilities, it will be easier to take the probability of an outcome with no sales and substruct it from 1, because in this case {NNN} will be a complement of an event of at least one sale to the three customers.
+So, 1 - P({NNN}) = 1 - 0.512 = 0.488.
+The probability of an event of at least one sale to the three customers equals to 0.488.
+c) In part b, our probability calculations assumed that all the outcomes were independent of each other. However, in reality, the three customers who enter the shop might be friends or family members. In such a scenario, we can make the assumption that only one of them will make a purchase, essentially paying for the entire group. Nevertheless, this assumption can impact our probability calculation because, in technical terms, only one person out of the three actually made a purchase. Our initial calculations did not consider the possibility that each person might have acquired something from the store, even though only one person was responsible for the payment.
+
+5.30
+a) First, we would limit ourselves to the lowest income category space, disregarding other values that may distract us. Then, looking through the lowest income row, we observe two values: one representing probability of being audited, and the other one not. The question is asking to find the probability of being audited, so we would select the second value corresponding to "yes" which is 0.0085. Now, to obtain the conditional probability, we need to divide 0.0085 by the row marginal total probability, which would be 0.0085/(0.0085 + 0.9556) = 0.0088. Tax payer has 0.9 % chance to be audited given that they are in lowest income category.
+```{r}
+0.0085/(0.0085 + 0.9556)
+```
+b) Similar to the first question, we will limit ourselves to "yes" audited column. The value we are interested in is in lowest income category row, which is 0.0085. Now, we need to calculate row's marginal total probability, which would be 0.0085 + 0.0009 + 0.0003 = 0.0097. Now find the proportion: 0.0085/0.0097 = 0.8763. Given that the taxpayer was audited, they have 88 % chance to be in lowest income category.
+```{r}
+0.0085 / 0.0097
+```
+
+5.39
+a) The probability that an adult is very happy in his or her relationship will be equal to total number of very happy adults divided by a total number of individuals that participated in the survey: 147 / 317 = 0.4637
+P(VH) = 46 % where VH = very happy
+```{r}
+147 / 317
+```
+b) -i P(VH | M) = P(VH & M) / P(M) where VH = very happy and M = male.
+P(VH & M) = 69 / 317
+P(M) = 146 / 317
+P(VH | M) = (69 / 317) / (146 / 317) = 0.4726
+P(VH | M) = 47 %
+```{r}
+(69 / 317) / (146 / 317)
+```
+-ii P(VH | F) = P(VH & F) / P(F) where VH = very happy and F = female
+P(VH & F) = 78 / 317
+P(F) = 171 / 317
+P(VH | F) = (78 / 317) / (171 / 317) = 0.4561
+P(VH | F) = 45.6 %
+```{r}
+(78 / 317) / (171 / 317) 
+```
+c) Events VH and M are independent if P(VH | M) = P(VH)
+P(VH | M) = 46 %
+P(VH) = 47 %
+Even though numbers 46 and 47 are very close to each other, P(VH | M) does not equal to P(VH) proving that these two events are not independent.
+
+5.40
+a) To find the probability that the tennis player will serve good on the first try, we need to divide the total number of her good first serves by a number of the total serves. 28 / 41 = 0.6829
+Probability is equal to 68 %.
+```{r}
+28 / 41
+```
+b) Because these two events are independent from each other, meaning that probability of faulting on the first serve does not influence the probability of faulting on the second serve, we can use the formula: P(A and B) = P(A) * P(B).
+Find probability of first fault: we know that total amount of serves was 41 and amount of good first serves was 28, so amount of faulty first serves is 41 - 28 = 13. Now, probability of a faulty first serve would be: 13 / 41.
+Find the probability of a double fault: we are given the information that she had three double faults during that game, so the probability would be 3 / 41.
+Now lets apply the formula: (13 / 41) * (3 / 41) = 0.0232.
+Probability of double faulting given that her first serve resulted in fault is 2.3 %
+```{r}
+(13 / 41) * (3 / 41)
+```
+c) 2.3 %
+

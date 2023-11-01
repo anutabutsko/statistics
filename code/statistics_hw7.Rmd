@@ -32,7 +32,7 @@ P(N & D) = 0.3 %
 ```
 d) If N and D were independent, then P(N & D) = P(N) * P(D) = (164128 / 577006) * (2111 / 577006) = 0.0010
 Since P(N & D) actually equaled 0.0028, N and D were not independent.
-In context of this data it means that there is dependence between wether a person died in a car accident or no based on if they were wearing a seatbelt or not.
+In context of this data it means that there is dependence between whether a person died in a car accident or no based on if they were wearing a seat belt or not.
 ```{r}
 (164128 / 577006) * (2111 / 577006)
 ```
@@ -111,7 +111,110 @@ c) 2.3 %
 b) 
 
 5.50
+a) Since we were given probabilities of hole in one for each hole, we can easily calculate complements for every hole in one:
+P complement of hole in one on hole 4 = 1 - 0.0005 = 0.9995
+P complement of hole in one on hole 6 = 1 - 0.0015 = 0.9985
+P complement of hole in one on hole 12 = 1 - 0.0005 = 0.9995
+P complement of hole in one on hole 16 = 1 - 0.0025 = 0.9975
+We know that probabilities of making hole in one are independent from one hole to the nest, so, to find probability of no holes in one during the round of golf, we can just multiply the complements we calculated above: P(no hole in one) = 0.9995 * 0.9985 * 0.9995 * 0.9975 = 0.995008 or 99.5 %.
 ```{r}
-1 - 73 / 700000
+0.9995 * 0.9985 * 0.9995 * 0.9975
+```
+b) Since every round is independent, to calculate probability for the next 20 rounds, we can use the result from part a) for every no hole in one round 20 times.
+So the calculation would be P(no hole in one) * P(no hole in one) * ... * P(no hole in one) of a total 20 time, which is the same as P(no hole in one)^20.
+P(no hole in one in 20 rounds) = P(no hole in one)^20 = 0.995008^20 = 0.9046105 or 90 %.
+```{r}
+0.995008^20
+```
+c) Because we already calculated the complement of making at least one hole in one during the next 20 rounds, it is easier to subtract that value from 1 to get the result, rather than recalculate the whole new probability.
+P(at least one hole in one in 20 rounds) = 1 - 0.9046105 = 0.0953895 or 9.5 %.
+```{r}
+1 - 0.9046105 
 ```
 
+5.57
+a) S is yes for having breast cancer, S^C is a complement of S:
+P(POS|S) = 0.86 * 0.01 = 0.0086 or 0.9 %
+P(NEG|S) = (1 - 0.86) * 0.01 = 0.0014 or 0.1 %
+P(POS|S^C) = (1 - 0.88) * (1 - 0.01) = 0.12 or 12 %
+P(NEG|S^C) = 0.88 * (1 - 0.01) = 0.87 or 87 %
+```{r}
+0.86 * 0.01 
+(1 - 0.86) * 0.01 
+(1 - 0.88) * (1 - 0.01) 
+0.88 * (1 - 0.01) 
+```
+b) To calculate P(POS) we have to apply formula: P(POS) = P(POS & S) + P(POS & S^C)
+P(POS) = 0.0086 + 0.1188 = 0.1274 or 13 %.
+c) The question is asking to find P(S|POS). To calculate this, we have to apply Bayers' rule: P(S|POS) = P(POS|S) * P(S) / P(POS) = 0.0086 * 0.01 / 0.1274 = 0.000675 or 0.07 %.
+```{r}
+0.0086 * 0.01 / 0.1274
+```
+d) Frequencies on branches of Breast Cancer are 1 for Yes and 99 for No. To calculate those values, we only need to know one of them, the other will equal to 100 minus the first one, because Yes and No values have to sum up to 100, which is the total number of women in the group. For diagnostic test, the sum of POS and NEG results has to equal to the total number of the corresponding branch, either Yes for breast cancer or No for no breast cancer. So, for example, POS result given no condition(12) plus NEG result given no condition(87) is equal to 99, which is the frequency of No breast cancer branch. 
+P(S|POS) can be calculated using conditional probability formula, however, because we are already given all the frequencies, all we have to do is to plug in the numbers: 
+POS = 1 + 12 = 13
+S = 1
+P(S|POS) = 1 / 13 = 0.08
+The reason why the predicted probability of having breast cancer given that result of the test is positive is only 8%( which is quite low), is not because the test is not reliable, it caused by the fact that the prevalence is extremely low. We were told that only 1 out of 100 women in the group had breast cancer, which is 1 %. So, the probability of having the condition even though the test was positive is only 8 % because a very small percentage of women actually had cancer in the first place.
+
+5.62
+a) Probability that down syndrome occurs: 54 / 5282 = 0.01 or 1 %.
+```{r}
+54 / 5282
+```
+b) i. Sensitivity P(POS|S) = P(POS & YES) / P(YES) = (48/5282) / (54/5282) = 0.89 or 89 %
+```{r}
+(48/5282) / (54/5282)
+```
+
+ii. Specificity P(NEG|NO) = P(NEG & NO) / P(NO) = (3921/5282) / (5228/5282) = 0.75 or 75 %
+```{r}
+(3921/5282) / (5228/5282)
+```
+c) i. P(YES|POS) = P(YES & POS) / P(POS) = (48/5282) / (1355/5282) = 0.035 or 3.5 %
+```{r}
+(48/5282) / (1355/5282)
+```
+ii. P(NO|NEG) = P(NO & NEG) / P(NEG) = (3921/5282) / (3927/5282) = 0.998 or 99.8 %
+```{r}
+(3921/5282) / (3927/5282)
+```
+d) The probability of having a down syndrome and testing positive on a test is predicted to be 89 %, which is quite high. The probability of not having down syndrome given that test was negative is 99.8 %, which is also very high. And probability of not having the condition and testing negative is 75 %. By looking at these probabilities we can agree that the test is reliable in determining whether a child will have down syndrome. However, answer in part c) i. is telling us something different. It showed that estimated probability of actually having the condition given that test was positive is only 3.5 %, which is extremely low. This, however, does not indicate that test is ineffective, because if we look at the prevalence, which is P(YES) = 54/5282 = 0.01 or probability of child actually having down syndrome is only 1 %. This is very low, hence, the P(YES|POS) is also low, not because the test is not reliable, but because in reality a very small percentage of population actually has down syndrome.
+
+6.5
+a) P(1) = 0.10
+P(2) = 0.30
+P(3) = 0.40
+P(4) = 0.20
+b) To calculate the mean we need to multiply each possible value of the random variable by its probability and then add all these products.
+1 * 0.1 + 2 * 0.3 + 3 * 0.4 + 4 * 0.2 = 2.7
+An average final grade score assigned by instructor is 2.7.
+```{r}
+1 * 0.1 + 2 * 0.3 + 3 * 0.4 + 4 * 0.2
+```
+
+6.12
+a) Let W represent winning and L represent losing. Sample space: {WW, WL, LW, LL}.
+b) 
+First Item:
+  For winning: 0.1
+  For losing: 0.9
+Second Item:
+  For winning: 0.2
+  For losing: 0.8
+So, to calculate probability of outcomes in our sample space, we have to multiply corresponding probabilities:
+P(WW) = 0.1 * 0.2 = 0.02
+P(WL) = 0.1 * 0.8 = 0.08
+P(LW) = 0.9 * 0.2 = 0.18
+P(LL) = 0.9 * 0.8 = 0.72
+c) For each outcome we calculate total amount of money spent: X = {50, 30, 20, 0}.
+50 for WW, 30 for WL, 20 for LW, and 0 for LL.
+P(50) = 0.02
+P(30) = 0.08
+P(20) = 0.18
+P(0) = 0.72
+d) Mean of X = 0.02 * 50 + 0.08 * 30 + 0.18 * 20 + 0.72 * 0 = 7 $
+This represents the average amount of money we can expect to spend when participating in two eBay auctions with given probabilities of winning each bid.
+```{r}
+0.02 * 50 + 0.08 * 30 + 0.18 * 20 + 0.72 * 0
+```

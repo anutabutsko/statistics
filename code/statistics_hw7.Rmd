@@ -9,18 +9,17 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-
 # Problem 1
 
 5.23
-a) Possible outcomes: {YS, YN, YD, YN}
+a) Possible outcomes: {YS, YD, NS, ND}
 b) -i P(D) = total number of people that died divided by total count of people. 2111 / 577006 = 0.0037
-P(D) = 0.3 %
+P(D) = 0.4 %
 ```{r}
 2111 / 577006
 ```
 
--ii P(N) = total number of people that were not wearing seatbelt divided by total count of people. 164128 / 577006 = 0.2844
+-ii P(N) = total number of people that were not wearing seat belt divided by total count of people. 164128 / 577006 = 0.2844
 P(N) = 28 %
 ```{r}
 164128 / 577006
@@ -49,7 +48,7 @@ NYY = 0.8 * 0.2 * 0.2 = 0.032
 NYN = 0.8 * 0.2 * 0.8 = 0.128
 NNY = 0.8 * 0.8 * 0.2 = 0.128
 NNN = 0.8 * 0.8 * 0.8 = 0.512
-b) To find the probability of an event of at least one sale to the three customers, instead of listing all the outcomes that fit that category and sum up their probabilities, it will be easier to take the probability of an outcome with no sales and substruct it from 1, because in this case {NNN} will be a complement of an event of at least one sale to the three customers.
+b) To find the probability of an event of at least one sale to the three customers, instead of listing all the outcomes that fit that category and sum up their probabilities, it will be easier to take the probability of an outcome with no sales and subtract it from 1, because in this case {NNN} will be a complement of an event of at least one sale to the three customers.
 So, 1 - P({NNN}) = 1 - 0.512 = 0.488.
 The probability of an event of at least one sale to the three customers equals to 0.488.
 c) In part b, our probability calculations assumed that all the outcomes were independent of each other. However, in reality, the three customers who enter the shop might be friends or family members. In such a scenario, we can make the assumption that only one of them will make a purchase, essentially paying for the entire group. Nevertheless, this assumption can impact our probability calculation because, in technical terms, only one person out of the three actually made a purchase. Our initial calculations did not consider the possibility that each person might have acquired something from the store, even though only one person was responsible for the payment.
@@ -88,8 +87,8 @@ P(VH | F) = 45.6 %
 ```
 c) Events VH and M are independent if P(VH | M) = P(VH)
 P(VH | M) = 46 %
-P(VH) = 47 %
-Even though numbers 46 and 47 are very close to each other, P(VH | M) does not equal to P(VH) proving that these two events are not independent.
+P(VH) = 46 %
+P(VH | M) = P(VH) = 46 %, proving that these two events are independent.
 
 5.40
 a) To find the probability that the tennis player will serve good on the first try, we need to divide the total number of her good first serves by a number of the total serves. 28 / 41 = 0.6829
@@ -105,10 +104,19 @@ Probability of double faulting given that her first serve resulted in fault is 2
 ```{r}
 (13 / 41) * (3 / 41)
 ```
-c) 2.3 %
+c) 3 / 41 * 100 = 7 %
+```{r}
+3 * 100 / 41
+```
 
 5.48
-b) 
+a) The probability of at least two students in class of 25 people having the same birthday is 57 %, based on our calculations in class. The probability of two students having birthday on January 1st would be much lower than our previous example, because we are restricting the number of possible matches to a specific date. In the previous example, we assumed no specific birthday, meaning any student's birthday could match to any other student's birthday, which leads to a higher overall probability. However, if my birthday is on January 1st, that means that there are only 24 other students in class whose birthday could potentially match mine. This reduction in potential matches decreases the probability.
+b) To make calculations easier, we can follow the same steps as we did when calculated birthday match probability in class. First, we should find the probability of no matches at all. If my birthday is on January 1st, then every other student that has birthday on any other day out of the year is guaranteed to not have a match with my birthday. So, any of 364 days out of 365 days will not match to my birthday. Because we are left with 24 students(25 - 1(me)), we need to multiply 364/365 24 times by itself: 364/365 * 364/365 * ... * 364/365, or (364/365)^24 = 0.9362772.
+This is the probability of 24 out of 25 students with birthday that does not match mine. To find P(student with a birthday that matches mine) = 1 - 0.9362772 = 0.0637228 or approximately 6 %.
+This proves that probability of finding a student with the same birthday as mine is much lower than finding any two students with the same birthday.
+```{r}
+(364/365)^24
+```
 
 5.50
 a) Since we were given probabilities of hole in one for each hole, we can easily calculate complements for every hole in one:
@@ -195,7 +203,7 @@ An average final grade score assigned by instructor is 2.7.
 
 6.12
 a) Let W represent winning and L represent losing. Sample space: {WW, WL, LW, LL}.
-b) 
+b) Probabilities:
 First Item:
   For winning: 0.1
   For losing: 0.9

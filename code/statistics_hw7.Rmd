@@ -107,3 +107,11 @@ Probability of double faulting given that her first serve resulted in fault is 2
 ```
 c) 2.3 %
 
+5.48
+b) 
+
+5.50
+```{r}
+1 - 73 / 700000
+```
+

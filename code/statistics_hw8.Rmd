@@ -29,68 +29,70 @@ c)
 ```{r}
 z.norm(0.67, 0, 1)
 ```
+If we were to change values of mu and sigma parameters, the output would not be affected.  
+z represents the number of standard deviations that value x of a random variable falls from the mean. The crucial point is that z score is a way to standardize different normal distributions. z score of 1.68 means the same thing in terms of position within any normal distribution, no matter the mean or standard deviation: it's always 1.68 standard deviations above the mean. Therefore, the overall probability associated with a z-score is always the same, regardless of the actual mean and standard deviation of the distribution.  
+
 Change mu and sigma values:
 ```{r}
 z.norm(1.68, 12, 3)
 z.norm(2.58, 10, 3)
-z.norm(0.67, 12, 3)
+z.norm(0.67, 14097, 3457364)
 ```
-z represents the number of standard deviations that value x of a random variable falls from the mean. The crucial point is that z score is a way to standardize different normal distributions. z score of 1.68 means the same thing in terms of position within any normal distribution, no matter the mean or standard deviation: it's always 1.68 standard deviations above the mean. Therefore, the overall probability associated with a z-score is always the same, regardless of the actual mean and standard deviation of the distribution.
 
 # Problem 2
 (**I took formulas from the presentation slides, however, typing them all out here is tough, so I hope the following section makes sense**)
-E[X] for a discrete random variable: Sum(x * P(X=x)) - sum of all outcomes of discrete random variable multiplied by their probabilities.
-Now, to prove linear relationship by deriving the form of E[aX + b] as a function, we can start by defining a new random variable Y = aX + b => E[Y] = E[aX + b].
-Applying the formula from the presentation slides:
-E[Y] = Sum((ax + b) * P(X=x)) =
-Sum(ax * P(X=x) + b * P(X=x)) =
-Sum(ax * P(X=x)) + Sum(b * P(X=x)) =
-a * Sum(x * P(X=x)) + b * Sum(P(X=x))
-(we already know that Sum(x * P(X=x)) = E[X] by definition,
-and Sum(P(X=x)) is sum of all probabilities of all outcomes of our random variable, which we know equals to 1)
-So,
-a * Sum(x * P(X=x)) + b * Sum(P(X=x)) = a * E[X] + b * 1 = aE[X] + b
+E[X] for a discrete random variable: Sum(x * P(X=x)) - sum of all outcomes of discrete random variable multiplied by their probabilities.  
+Now, to prove linear relationship by deriving the form of E[aX + b] as a function, we can start by defining a new random variable Y = aX + b => E[Y] = E[aX + b].  
+Applying the formula from the presentation slides:   
+E[Y] = Sum((ax + b) * P(X=x)) =  
+Sum(ax * P(X=x) + b * P(X=x)) =  
+Sum(ax * P(X=x)) + Sum(b * P(X=x)) =  
+a * Sum(x * P(X=x)) + b * Sum(P(X=x))  
+(we already know that Sum(x * P(X=x)) = E[X] by definition,  
+and Sum(P(X=x)) is sum of all probabilities of all outcomes of our random variable, which we know equals to 1)  
+So,  
+a * Sum(x * P(X=x)) + b * Sum(P(X=x)) = a * E[X] + b * 1 = aE[X] + b  
 
-V[X] for a discrete random variable: Sum((x - E[X])^2 * P(X=x)) - sum of all outcomes of discrete random variable minus the expected value squared multiplied by their probabilities.
-We can derive the form of V[aX +b] as a function similarly to the way we did it for E[X].
-Define a new random variable Y = aX + b => E[Y] = E[aX + b]
-Applying V[X] = Sum((x - E[X])^2 * P(X=x)) formula to Y random variable:
-Sum(((ax + b) - (aE[X] + b))^2 * P(X=x)) =
-Sum((ax + b - aE[X] - b)^2 * P(X=x)) =
-Sum(a^2 * (x - E[X])^2 * P(X=x)) =
-a^2 * Sum((x - E[X])^2 * P(X=x)) =
-(we can see that summation we got is the exact V[X] formula we used originally)
-So,
-a^2 * Sum((x - E[X])^2 * P(X=x)) = a^2 * V[X]
-After performing all the calculations, we can see that the spread of our random variable will be scaled by a^2. We can also see that b got cancelled out and does not appear in the end result at all, proving that variance does not get affected by shift.
+V[X] for a discrete random variable: Sum((x - E[X])^2 * P(X=x)) - sum of all outcomes of discrete random variable minus the expected value squared multiplied by their probabilities.  
+We can derive the form of V[aX +b] as a function similarly to the way we did it for E[X].  
+Define a new random variable Y = aX + b => E[Y] = E[aX + b]  
+Applying V[X] = Sum((x - E[X])^2 * P(X=x)) formula to Y random variable:  
+Sum(((ax + b) - (aE[X] + b))^2 * P(X=x)) =  
+Sum((ax + b - aE[X] - b)^2 * P(X=x)) =  
+Sum(a^2 * (x - E[X])^2 * P(X=x)) =  
+a^2 * Sum((x - E[X])^2 * P(X=x)) =  
+(we can see that summation we got is the exact V[X] formula we used originally)  
+So,  
+a^2 * Sum((x - E[X])^2 * P(X=x)) = a^2 * V[X]  
+After performing all the calculations, we can see that the spread of our random variable will be scaled by a^2. We can also see that b got cancelled out and does not appear in the end result at all, proving that variance does not get affected by shift.  
 
 # Problem 3
-1. b)  We get result E[Z] = 0 from subtracting the mean, which shifts the whole data set so that the average is lined up with zero. We do this by subtracting the original average from every variable: X - mu. Now, if we find the average of this shifted set it will be zero because every variable has been lined up around mean 0.
-For example, let our random variable be X that takes on possible outcomes: X = [10, 20, 30, 40, 50, 60] with mu 35.
-Subtract mu from every possible outcome: [-25, -15, -5, 5, 15, 25]. Now, if we calculate the new average it will equal to 0, because data is now centered around 0.
-V[Z] = 1 is achieved by dividing (X - mu) by the original standard deviation, which measures the spread of the data. This process scales the spread, resulting in a new variance equal to 1.
+1. 
+b)  We get result E[Z] = 0 from subtracting the mean, which shifts the whole data set so that the average is lined up with zero. We do this by subtracting the original average from every variable: X - mu. Now, if we find the average of this shifted set it will be zero because every variable has been lined up around mean 0.
+For example, let our random variable be X that takes on possible outcomes: X = [10, 20, 30, 40, 50, 60] with mu 35.  
+Subtract mu from every possible outcome: [-25, -15, -5, 5, 15, 25]. Now, if we calculate the new average it will equal to 0, because data is now centered around 0.  
+V[Z] = 1 is achieved by dividing (X - mu) by the original standard deviation, which measures the spread of the data. This process scales the spread, resulting in a new variance equal to 1.  
 
-2. a) Bernoulli random variable is a binomial variable that takes on only two outcomes: success or failure.
-X ~ Bernoulli(p) 
-p(x=1) = p("success") = p
-p(x=0) = p("failure") = 1 - p
-We can easily prove E[X] = p by calculating the expected value (**I took formulas from the presentation slides, however, typing them all out here is tough, so I hope the following section makes sense**):
-E[X] = Sum(x * P(X=x)) = 
-1 * p(1) + 0 * p(0) = 
-1 * p + 0 * (1 - p) = 
-p + 0 = p
-
-For the variance V [X] = p(1 − p):
-
-V[X] = Sum((x - E[X])^2 * P(X=x)) = 
-(0 - p)^2 * P(X=0) + (1 - p)^2 * P(X=1) = 
-(0 - p)^2 * (1 - p) + (1 - p)^2 * p = 
-p^2 * (1 - p) + (1 - p) * (1 - p) * p = 
-p^2 - p^3 + (1 - 2 * p + p^2) * p = 
-p^2 - p^3 + p - 2 * p^2 + p^3 = 
--p^2 + p = 
-p - p^2 = 
-p(1 - p)
+2. 
+a) Bernoulli random variable is a binomial variable that takes on only two outcomes: success or failure.  
+X ~ Bernoulli(p)   
+p(x=1) = p("success") = p  
+p(x=0) = p("failure") = 1 - p  
+We can easily prove E[X] = p by calculating the expected value:  
+E[X] = Sum(x * P(X=x)) =   
+1 * p(1) + 0 * p(0) =   
+1 * p + 0 * (1 - p) =   
+p + 0 = p  
+b) For the variance V [X] = p(1 - p):  
+V[X] = Sum((x - E[X])^2 * P(X=x)) =   
+(0 - p)^2 * P(X=0) + (1 - p)^2 * P(X=1) =   
+(0 - p)^2 * (1 - p) + (1 - p)^2 * p =   
+p^2 * (1 - p) + (1 - p) * (1 - p) * p =   
+p^2 - p^3 + (1 - 2 * p + p^2) * p =   
+p^2 - p^3 + p - 2 * p^2 + p^3 =   
+-p^2 + p =   
+p - p^2 =   
+p(1 - p)  
 
 # Problem 4
 6.28
@@ -122,12 +124,12 @@ qnorm(0.96, 3.41, 0.55)
 ```
 
 6.42
-a) To consider that the binomial distribution applies in this scenario, we have to assume the following:
-1. There is a set number of trials: The problem provides us with the set number of free throws - 10. This condition is met. If there were an unlimited number of throws to be made by the player, this would not be considered a binomial setting.
-2. Each of the n trials has two possible outcomes: In this scenario, the player can either make the free throw or miss it. So we meet the criteria for success/failure conditions to consider this scenario a binomial distribution. There are no other options other than success (making the throw) or failure (missing the throw).
-3. Each trial has the same probability of success: The probability of making the throw is the same for every shot. We must assume that there will be nothing that will suddenly influence the probability of the next throw.
-4. The n trials are independent: One throw does not depend on the outcome of the previous throw. We must assume that the result of making one throw will not affect the probability of making the next one.
-b) X ~ Bin(10, 0.9) where n=10 and p=0.9.
+a) To consider that the binomial distribution applies in this scenario, we have to assume the following:  
+1. There is a set number of trials: The problem provides us with the set number of free throws - 10. This condition is met. If there were an unlimited number of throws to be made by the player, this would not be considered a binomial setting.  
+2. Each of the n trials has two possible outcomes: In this scenario, the player can either make the free throw or miss it. So we meet the criteria for success/failure conditions to consider this scenario a binomial distribution. There are no other options other than success (making the throw) or failure (missing the throw).  
+3. Each trial has the same probability of success: The probability of making the throw is the same for every shot. We must assume that there will be nothing that will suddenly influence the probability of the next throw.  
+4. The n trials are independent: One throw does not depend on the outcome of the previous throw. We must assume that the result of making one throw will not affect the probability of making the next one.  
+b) X ~ Bin(10, 0.9) where n=10 and p=0.9.  
 c) 
 i.
 ```{r}
@@ -161,6 +163,6 @@ get_prob(k, n, p)
 ```
 
 6.51
-a) In this scenario, the independence condition would be violated because the probability of one family member attending church likely depends on the attendance of other family members. This is because, in real life, families often prefer to go to church together.
-b) In this case, the random variable only includes votes selected from the first precinct, which is not representative of the entire population. Not every trial has the same probability of success because the likelihood of voting for the Democratic candidate is not the same in each precinct.
-c) In this scenario, the independence rule of binomial probability is violated because, for example, if we select a female on the first pick, we are then left with 9 females and 10 males in the class. Therefore, the probability of selecting another female on the second pick will be different, as the number of females in the sample has changed. So, we can conclude that the outcome of one variable influences the outcome of another variable, thus proving that they are not independent.
+a) In this scenario, the independence condition would be violated because the probability of one family member attending church likely depends on the attendance of other family members. This is because, in real life, families often prefer to go to church together.  
+b) In this case, the random variable only includes votes selected from the first precinct, which is not representative of the entire population. Not every trial has the same probability of success because the likelihood of voting for the Democratic candidate is not the same in each precinct.  
+c) In this scenario, the independence rule of binomial probability is violated because, for example, if we select a female on the first pick, we are then left with 9 females and 10 males in the class. Therefore, the probability of selecting another female on the second pick will be different, as the number of females in the sample has changed. So, we can conclude that the outcome of one variable influences the outcome of another variable, thus proving that they are not independent.  

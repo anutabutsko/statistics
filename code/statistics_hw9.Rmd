@@ -1,0 +1,190 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+# Problem 1
+```{r}
+problem_1 <- function(n){
+  set.seed(1)
+  # Default parameters
+  n.sim <- 10000
+  min <- -2
+  max <- 2
+  
+  x <- runif(n.sim, min, max)
+  
+  mu <- mean(x)
+  sigma <- sd(x)
+  
+  all.means <- numeric(n.sim)
+  
+  for (j in 1:n.sim) all.means[j] <- mean(sample(x, n))
+  
+  # Mean
+  print(paste("Mean:", mean(all.means)))
+  
+  # Standard deviation
+  print(paste("Theoretical standard deviation:", sigma/sqrt(n)))
+  print(paste("Standard deviation:", sd(all.means)))
+  
+  return(hist(all.means))
+}
+
+problem_1(1000) 
+```  
+  
+Shape: we can observe on the histogram above, that the sampling distribution is bell shaped.  
+Mean: Mean is very close to zero, which is the true value of mean since our samples range between -2 to 2 with the mean 0.  
+Standard deviation: values of sd 0.0352 and theoretical sd 0.0368 are very close to each other. Data deviates slightly from the mean. Most of the data located withing 3 * 0.0352 = 0.1056 from the mean.  
+a)  
+```{r}
+problem_1(2)
+```  
+  
+Distribution is bell shaped.  
+Mean value is close to true mean.  
+Sd and theoretical sd values correspond to each other, however, data deviates substantially from the mean, comparing to the first example. When sample size equals 2, most of the data is located withing 3 * 0.8213 = 2.4639 of the mean. Considering that our sample data only ranges between -2 and 2, this sampling size is not able to provide us with any useful information.   
+b)  
+```{r}
+problem_1(50)
+```  
+  
+Distribution is bell shaped.  
+Mean value is close to true mean.  
+Sd and theoretical sd values correspond to each other. In this case, majority of the data is located withing 3 * 0.164 = 0.492 of the mean. The performance is not as good as when we had sample size of 1000, however, sample size of 50 is still large enough to give us a good idea about data distribution.  
+  
+# Problem 2  
+```{r}
+problem_2 <- function(n, value, alpha=0.05){
+  p.hat <- value/n
+  s <- sqrt(p.hat*(1-p.hat)/n)
+  
+  return(c(p.hat - qnorm(1-alpha/2)*s,
+    p.hat + qnorm(1-alpha/2)*s))
+}
+
+set.seed(1)
+n.sim <- 10000
+prob <- 0.6
+size <- 1000
+
+ci.95 <- matrix(0, nrow=n.sim, ncol=2)
+ci.90 <- matrix(0, nrow=n.sim, ncol=2)
+
+# 1) generate the 10,000 values from Bin(n=1000,p=0.6)
+values <- rbinom(n=n.sim, size=size, prob=prob)
+
+# 2) loop through those and feed them as input to your confidence level function from part 1
+# (for cases of 95% and 90%)
+for (i in 1:n.sim){
+  value <- values[i]
+  
+  result_1 <- problem_2(size, value, 0.05)
+  result_2 <- problem_2(size, value, 0.10)
+  
+  ci.95[i, ] <- result_1
+  ci.90[i, ] <- result_2
+}
+
+# Calculate the % of times your confidence interval contains the true parameter
+paste("95 % confidence interval contains the true population proportion", 
+      mean(ci.95[,1] < prob & ci.95[,2] > prob) * 100, "% of the time.")
+paste("90 % confidence interval contains the true population proportion", 
+      mean(ci.90[,1] < prob & ci.90[,2] > prob) * 100, "% of the time.")
+```
+  
+# Problem 3  
+**7.7**  
+a)   
+mean = p = 0.3  
+sd = square root of p(1-p)/n = sqrt(0.3*(1-0.3)/500) = 0.0204939  
+Based on the sample size of 500, we can assume that the distribution will be bell shaped, with mean 0.3 and sd 0.02.  
+b) 0.32 and 0.28 are only one standard deviation away from the mean, which is not especially unusual knowing the fact that, in bell shaped distribution, majority of the data lies within up to three standard deviations of the mean.  
+  
+**7.14**  
+a)  
+mean = p = 0.55  
+sd = square root of p(1-p)/n = sqrt((0.55 x (1-0.55))/200) = 0.03517812  
+b) Sample size of 200 is large enough to assume normal shape for this sampling distribution.  
+c) upper bound: 0.55 + (0.03517812 x 3) = 0.6555344  
+lower bound: 0.55 - (0.03517812 x 3) = 0.4444656  
+Probability of not getting the majority of votes is 0.5 - 0.4445 = 0.0555 or 5.5 %.  
+d) With n = 1000, sd would become sqrt((0.55 x (1-0.55))/1000) = 0.01573213  
+upper bound: 0.55 + (0.01573213 x 3) = 0.5971964  
+lower bound: 0.55 - (0.01573213 x 3) = 0.5028036  
+Because the sampling distribution is approximately normal, the probability is very close to 1 that the sample proportions would fall within 3 standard deviations of 0.55, that is from 0.503 to 0.597. So we can conclude that with sample size 1000, we would expect 99.7 % of voters to vote for the student.  
+    
+**7.15**  
+a) I got sample mean score of 68.6. I wouldn't expect to get exactly 70 because these are randomly generated values that will be somewhere around 70 but not always exactly at 70.  
+b) I got a bell shaped distribution with mean 70 and sd 2.86.  
+c) After changing population sd from 10 to 5, simulated sampling distribution decreased to 1.45. I got a more narrow histogram with mean 70 and sd 1.45.  
+  
+**7.20**  
+a) mean = mu = 0.1  
+sd = sigma/sqrt(n) = 100/(sqrt(1000000)) = 0.1  
+b) Considering the mean 0.1 which equals to 10 cents and sd of 0.1, winning 1 dollar would lie somewhere within 10 standard deviations from the wean. Which is highly highly extremely unlikely.  
+  
+**8.13**  
+a) Point estimate: 24 / 3900 = 0.00615385  
+b) Standard error: sqrt(p.hat(1-p.hat)/n) = sqrt(0.00615 x (1-0.00615)/3900) = 0.001251889  
+c) For 95 % confidence interval, z equals 1.96.  
+Margin of error: z x se = 1.96 x 0.001251889 = 0.002453702  
+d) 95% confidence interval: [0.00615385 - 0.002453702, 0.00615385 + 0.002453702] = [0.003700148, 0.008607552] = [0.0037, 0.0086]  
+We are 95 % confident that the population proportion of those who received the vaccine and still developed the flu is between 0.37 and 0.86 %.  
+e) Yes, we can. The upper bound is 0.86 % which is less than 1 %.  
+  
+**8.16**  
+a) To calculate the proportion of those in favor: 1183 / 1824 = 0.6485746  
+b) We are 95 % confident that the population proportion of those in favor of death penalty for people convicted of murder is between 63 and 67 %.  
+c) If we run many many simulations and calculate many many confidence intervals, in the long run, 95 % of those intervals will contain the unknown parameter p.  
+d) Yes, because the sample size is large enough and the lower bound of our confidence interval is 63 % which is well above 50 %.  
+  
+**8.29**  
+a) Point estimate of the population mean will equal to the sample mean = 2.56.  
+b) Standard error: s/sqrt(n) = 0.84 / sqrt(590) = 0.03458225  
+c) We are 95 % confident that the mean ideal number of children for females is between 2.49 and 2.62.  
+d) It is not, because 2.0 falls way outside of lower bound of our confidence interval.  
+  
+**8.34**  
+a)  
+```{r}
+t <- 2.447
+values <- c(55.5, 60.3, 60.6, 62.1, 65.5, 69.2)
+p.hat <- mean(values)
+se <- sd(values) / sqrt(6)
+print(paste("Confidence Interval:", p.hat - t * se, "to", p.hat + t * se))
+```
+b) To get a narrower interval, we can increase the sample size, or decrease confidence.  
+c)   
+```{r}
+t <- 3.707
+values <- c(55.5, 60.3, 60.6, 62.1, 65.5, 69.2)
+p.hat <- mean(values)
+se <- sd(values) / sqrt(6)
+print(paste("Confidence Interval:", p.hat - t * se, "to", p.hat + t * se))
+```
+The inference with 99 % confidence interval is less precise because it has greater margin of error. Having a greater margin of error is the sacrifice for gaining greater assurance(99 % rather than 95%) of correctly inferring where p falls.  
+d) The interval in part a is based on the assumptions that data was obtained by randomization(such as random sample or randomized experiment), data has an approximately normal population distribution and data does not contain extreme outliers.  
+* The t confidence interval method is not robust to violations of the random sampling assumption. The t method, like inferential statistical methods, has questionable validity if the method for producing the data did not use randomization.  
+* The most important case when the t confidence interval method does not work well is when the data contains extreme outliers. This is because of the effect of outliers on validity of the mean and confidence interval.  
+  
+**8.37**  
+a)  
+```{r}
+values <- c(0, 0, 0, 0, 1, 1, 1, 2, 2, 6, 6, 7, 7, 10)
+mean(values)
+print(paste("Mean:", mean(values)))
+print(paste("Standard Deviation:", sd(values)))
+print(paste("Standard Error:", sd(values) / sqrt(14)))
+```
+b) Because the sample size is less than 30, we will have to use t-score rather than z-score to calculate the confidence interval. For 90 % confidence interval, t equals 1.761.  
+```{r}
+t <- 1.761
+p.hat <- mean(values)
+se <- sd(values) / sqrt(14)
+print(paste("Confidence Interval:", p.hat - t * se, "to", p.hat + t * se))
+```
+We are 90 % confident that, on average, females 80 years old or older spend between 1.5 to 4.7 hours per week sending and answering email.   
+c) The reason why the population distribution may be skewed right is because majority of older people spend no to very little amount of time using computer or internet, with a few of those who spend more time.  
+Confidence intervals for a mean using t-distribution are robust against most violations of the normal population assumption. The most important case when the t confidence interval method does not work well is when the data contains extreme outliers. However, there are no outliers in our example, so the inference should still be valid.  

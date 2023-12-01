@@ -1,0 +1,141 @@
+# Problem 1
+```{r}
+library(MASS)
+library(ggplot2)
+library(dplyr)
+library(ggeasy)
+```
+a)  
+```{r}
+mu <- mean(Boston$medv)
+paste("Population mean:", mu)
+```
+b)  
+```{r}
+s <- sd(Boston$medv)
+n <- length(Boston$medv)
+
+se <- s / sqrt(n)
+
+paste("Theoretical se for mean:", se)
+```
+```{r}
+n <- length(Boston$medv)
+B <- 10000
+z <- numeric(B)
+
+for (b in 1:B){
+  i <- sample(n, n, replace=T)
+  z[b] <- mean(Boston$medv[i])
+}
+
+paste("Bootstrap se for mean:", sd(z))
+```
+Theoretical and bootstrap generated standard errors results are very close one to another.  
+c)  
+```{r}
+mu_med <- median(Boston$medv)
+
+paste("Population median:", mu_med)
+```
+d)  
+```{r}
+n <- length(Boston$medv)
+B <- 10000
+z <- numeric(B)
+
+for (b in 1:B){
+  i <- sample(n, n, replace=T)
+  z[b] <- median(Boston$medv[i])
+}
+
+paste("Bootstrap se for median:", sd(z))
+```
+e)  
+```{r}
+conf_interval <- quantile(z, c(0.025, 0.975))
+
+paste("95% confidence interval:", format(conf_interval[1]), "to", format(conf_interval[2]))
+```
+f)  
+```{r}
+mu_0.9 <- quantile(Boston$medv, 0.9)
+
+paste("0.9 quantile:", mu_0.9)
+```
+g)  
+```{r}
+n <- length(Boston$medv)
+B <- 10000
+z <- numeric(B)
+
+for (b in 1:B){
+  i <- sample(n, n, replace=T)
+  z[b] <- quantile(Boston$medv[i], 0.9)
+}
+
+z.plot <- data.frame(quantile_0.9 = z)
+
+ggplot(z.plot, aes(x = quantile_0.9)) + 
+  geom_histogram(binwidth = 0.5, fill = "gold", color = "firebrick", alpha = 0.7) +
+  labs(title = "Distribution of 0.9 quantile of\nmedian house values in Boston", x = "0.9 quantile", y = "Frequency") +
+  theme_minimal() +
+  scale_x_continuous(breaks = seq(30, 45, 1)) +
+  ggeasy::easy_center_title()
+```
+```{r}
+conf_interval <- quantile(z, c(0.025, 0.975))
+
+paste("95% confidence interval:", format(conf_interval[1]), "to", format(conf_interval[2]))
+```
+Based on the bootstrap analysis, we are 95% confident that population 0.9 quantile will lie within 32.4 and 36.5 interval.    
+  
+# Problem 2
+```{r}
+my.t.test <- function(vec, mu, ci.lvl=0.95){
+  x.bar = mean(vec)
+  s = sd(vec)
+  n = length(vec)
+  
+  t = (x.bar - mu) / (s / sqrt(n))
+  
+  df = n - 1
+  
+  p.value = 2 * pt(-abs(t), df)
+  
+  alpha = 1 - ci.lvl
+  t.critical = qt(1 - alpha/2, df)
+  CI = t.critical * s / sqrt(n)
+  CI.first = x.bar - CI
+  CI.second = x.bar + CI
+  
+  cat('t:', t, 
+      '\ndf:', df, 
+      '\np-value:', p.value, 
+      '\nCI:', CI.first, 'to', CI.second, 
+      '\nsample estimate:', x.bar)
+}
+```
+a) For confidence interval level 0.95:  
+```{r}
+my.t.test(c(1:10),mu=5)
+```
+Comparative t.test() call:  
+```{r}
+t.test(c(1:10), mu=5)
+```
+b) For confidence interval level 0.99:  
+```{r}
+my.t.test(c(1:10), mu=5, ci.lvl=0.99)
+```
+Comparative t.test() call:  
+```{r}
+t.test(c(1:10), mu=5, conf.level=0.99)
+```
+
+#Problem 4  
+**9.49**  
+
+**9.52**  
+
+**9.54**  

@@ -1,3 +1,8 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
 # Problem 1
 ```{r}
 library(MASS)
@@ -76,9 +81,15 @@ for (b in 1:B){
 
 z.plot <- data.frame(quantile_0.9 = z)
 
-ggplot(z.plot, aes(x = quantile_0.9)) + 
-  geom_histogram(binwidth = 0.5, fill = "gold", color = "firebrick", alpha = 0.7) +
-  labs(title = "Distribution of 0.9 quantile of\nmedian house values in Boston", x = "0.9 quantile", y = "Frequency") +
+z.plot %>%
+  ggplot(aes(x = quantile_0.9)) + 
+  geom_histogram(binwidth = 0.5, 
+                 fill = "gold", 
+                 color = "firebrick", 
+                 alpha = 0.7) +
+  labs(title = "Distribution of 0.9 quantile of\nmedian house values in Boston", 
+       x = "0.9 quantile", 
+       y = "Frequency") +
   theme_minimal() +
   scale_x_continuous(breaks = seq(30, 45, 1)) +
   ggeasy::easy_center_title()
@@ -132,10 +143,102 @@ Comparative t.test() call:
 ```{r}
 t.test(c(1:10), mu=5, conf.level=0.99)
 ```
+# Problem 3
+```{r}
+work_week <- read.csv("../data/workweek2012.csv")
+```
+a) H0: mu = 40 hr/week, Ha: mu != 40 hr/week  
+Given working hours per week data for a sample of males and females, is the population average of weekly working hours different from standard 40 hours?
+```{r}
+my.t.test(work_week$Hours, mu=40, ci.lvl=0.95)
+```
+```{r}
+t.test(work_week$Hours, mu=40)
+```
+```{r}
+cohens_effect_size <- function(vec, mu){
+  x.bar = mean(vec)
+  s = sd(vec)
+  
+  t = abs(x.bar - mu) / (s)
+  return(round(t, 2))
+}
+```
+```{r}
+paste("Cohen's effect size:", cohens_effect_size(work_week$Hours, mu=40))
+```
+**Interpretation:**  
+The P-value of 0.54785 is significantly above our significance level, making our sample estimate not statistically significant. Therefore, we will not accept the Ha and will conclude that the H0 is plausible. This is further supported by a very small Cohen's value of 0.02, which indicates a very small effect size.  
+The confidence interval between 39.38068 and 41.16649 agrees with the results of the t-test. The population mean falls within the 95% confidence interval of the sample statistic, proving once again that our sample estimate is not too far from the population mean and is therefore not considered statistically significant.  
+  
+b) For male population: 
+H0: mu = 40 hr/week, Ha: mu != 40 hr/week  
+Given working hours per week values for a sample of males, does the male population average of weekly working hours differ from standard 40 hours?
+```{r}
+male_work_week <- work_week %>%
+  filter(Gender == "Male")
+```
+p value result is provided in scientific notation. Decimal form: 0.00000004668033.
+```{r}
+my.t.test(male_work_week$Hours, mu=40, ci.lvl=0.95)
+```
+```{r}
+t.test(male_work_week$Hours, mu=40)
+```
+```{r}
+paste("Cohen's effect size:", cohens_effect_size(male_work_week$Hours, mu=40))
+```
+**Interpretation:** 
+The P-value of 0.000000047 is well below our significance level, indicating that the result is statistically significant. Thus, we would reject the H0 and accept the Ha. However, it is important to consider Cohen's effect size before drawing any conclusions. In this case, Cohen's effect size is quite small - 0.229, indicating a small difference between the population and sample means (40 vs 43.5 hours). So, despite observing a statistically significant difference, the actual observed difference (effect size) is small in practical terms.  
+The confidence interval, ranging from 42.27118 to 44.72828, is consistent with the t-test results, affirming the statistical significance of Ha. We can see that the population mean of 40 hours does not fall within this interval. However, confidence intervals are much more informative and can help us determine not only statistical significance but also practical significance. The lower end of the confidence interval is 42.27118, which is not far from our population mean of 40 hours. This indicates that although the P-value provides strong evidence against H0, the confidence interval shows that H0 is not substantially incorrect in practical terms.   
+c)  
+```{r}
+find_outliers <- function(vec){
+  x.bar <- mean(vec)
+  s <- sd(vec)
+  
+  upper = 3 * s + x.bar
+  lower = 3 * s - x.bar
+  
+  result <- which(vec > upper | vec < lower)
 
-#Problem 4  
+  return(result)
+}
+```
+Part a:  
+```{r}
+work_week[find_outliers(work_week$Hours),]
+```
+There are 20 outliers three or more standard deviations away from the sample mean.  
+Part b:  
+```{r}
+male_work_week[find_outliers(male_work_week$Hours),]
+```
+There are 2 outliers three or more standard deviations away from the sample mean.  
+  
+Given that we used two-sided t-test to test the hypothesis, we would not be concerned about the legitimacy of the results. Two-sided inferences using the t distribution are robust against violations of normality assumption. Furthermore, for large samples, as in our case, this assumption is generally not important.  
+  
+# Problem 4  
 **9.49**  
+a) If H0 is rejected, we can conclude that the drug is not safe.  
+b) Type 1 error would occur if we concluded that the drug is not safe, when in reality it was safe.  
+c) If we fail to reject H0 we can conclude that the drug is safe.  
+d) Type 2 error would occur if we failed to concluded that the drug not safe, when in reality it is not safe.
 
 **9.52**  
+a) Type 1 Error:
+In this example, we are comparing H0: innocent to Ha: guilty. In the case of a Type 1 error, H0 is rejected when it is actually true, which means that an innocent person will be wrongfully convicted and potentially sentenced to death. In the case of a Type 2 error, H0 is not rejected when it is actually false, resulting in a guilty person being acquitted and not held accountable for their crimes. While we may not want a murderer to be set free, subjecting an innocent person to the death penalty is a much more serious injustice than letting a guilty person escape punishment.
+b) Type 2 Error:
+In this scenario, we are comparing mammogram results, with H0: negative and an alternative hypothesis Ha: positive. In the case of a Type 1 error, H0 is rejected when it is actually true, leading to the conclusion that the mammogram result is positive when, in reality, it is negative. In the case of a Type 2 error, we fail to reject H0 when it is actually false, resulting in the conclusion that the result is negative when it is, in reality, positive. While we certainly do not want individuals to undergo unnecessary tests or treatments when they do not have cancer, failing to detect the disease and initiate treatment in a timely manner is a much more serious and potentially life-threatening error.
 
 **9.54**  
+a) t = (x.bar - mu) / (s / sqrt(n)) = (498 - 500) / (100 / sqrt(25000)) = -3.16  
+```{r}
+t = (498 - 500) / (100 / sqrt(25000))
+t
+```  
+b) For H0 = 500 and Ha != 500: p = 2 * pt(-abs(t), df) = 2 * pt(-abs(t), 24999) = 0.00157
+```{r}
+2 * pt(-abs(t), 24999)
+```  
+c) p value as small as 0.00157 indicates statistical significance. With such low p value, we can reject H0 with confidence and claim that the mean score for students that took the same exam in 2010 is not equal to 500. However, statistical significance does not imply practical significance. A small p value does not tell us if the parameter value differs by much in practical terms from the value H0. As in our case, small difference of 2 points between a sample mean and the null hypothesis value(498 vs 500) led to a statistical significance, when in reality it is not practically meaningful. This can happen due to large sample size of 25000 students. With large samples, small p values can occur even when the sample estimate falls near the parameter value.

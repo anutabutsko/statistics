@@ -1,0 +1,169 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+```{r}
+library(dplyr)
+
+options(scipen = 999)
+```
+  
+# Problem 1  
+```{r}
+listings <- read.csv("../data/listings.csv")
+```
+  
+```{r}
+cohens_effect_size <- function(vec, mu){
+  x.bar = mean(vec)
+  s = sd(vec)
+  
+  t = abs(x.bar - mu) / (s)
+  return(round(t, 2))
+}
+```
+  
+1. H0: mu = 150, Ha: mu != 150    
+Does the average price of NYC listings differ from $150 per night?  
+p-value: 0.1745  
+cohen's effect size: 0.01  
+With p-value 0.1745 we would not reject H0 and conclude that the average price of NYC listings of $150 per night is a plausible estimate. This is further supported by very small cohen's effect size value.  
+Confidence interval between 149.4 and 153.6 does agree with our hypothesis test results, because in this case we concluded that H0 is plausible and, as we can see, our H0:mu = 150 does indeed fall within confidence interval.  
+```{r}
+t.test(listings$price, mu=150)
+
+cohens_effect_size(listings$price, mu=150)
+```
+  
+2. We can see that there are A LOT of outliers in this data set. This data distribution is not normal.  
+```{r}
+boxplot(listings$price, horizontal=TRUE)
+```
+  
+```{r}
+find_outliers <- function(vec){
+  q1 <- quantile(vec, prob=0.25)
+  q3 <- quantile(vec, prob=0.75)
+  
+  iqr <- q3 - q1
+  
+  upper <- q3 + 1.5 * iqr
+  lower <- q1 - 1.5 * iqr
+  
+  result <- vec[vec < lower | vec > upper]
+
+  return(result)
+}
+
+length(find_outliers(listings$price))
+```
+  
+There are 2,873 outliers, as determined by the IQR calculations. Outliers influence the mean and standard deviation, which in turn impacts the t-test results. Therefore, we would definitely be concerned about these t-test results.  
+  
+3. After completing all the steps, the percentage of times our p-value was less than 0.05 was 16%. This is significantly higher than what we would expect. With a significance level of 0.05, we wouldn't expect the p-value to be below 0.05 more than 5% of the time. This demonstrates how extreme outliers in our distribution can affect the t-test results and increase the type 1 error rate.  
+```{r}
+n.sim <- 10000
+samp.size <- 20
+
+our.pop <- listings$price
+mu.pop <- mean(our.pop)
+
+p.values <- numeric(n.sim)
+
+for (j in 1:n.sim){
+  x <- sample(our.pop, samp.size)
+  p.values[j] <- t.test(x, mu=mu.pop)$p.value
+}
+
+mean(p.values < 0.05)
+```
+  
+# Problem 2  
+```{r}
+work_week <- read.csv("../data/workweek2012.csv")
+View(work_week)
+```
+  
+1. Both the male and female weekly working hours datasets have outliers. The difference between this data and the one in problem 1 is that the outliers are located on both sides around the median of the data, which can help balance the mean out. However, they would still affect the standard deviation and subsequently impact the t-test results.  
+1)  
+```{r}
+male_work_week <- 
+  work_week %>%
+  filter(Gender == "Male")
+
+hist(male_work_week$Hours)
+boxplot(male_work_week$Hours)
+```
+  
+2)  
+```{r}
+female_work_week <- 
+  work_week %>%
+  filter(Gender == "Female")
+
+hist(female_work_week$Hours)
+boxplot(female_work_week$Hours)
+```
+   
+2. H0: mu.M - mu.F = 0, Ha: mu.M - mu.F != 0  
+Does the mean working hours per week for males equal the mean working hours per week for females?  
+p-value: 0.000000000000568  
+cohen's effect size: 0.4270249  
+According to the results of the t-test, we would reject the null hypothesis and conclude that the average working hours per week for males are different from those for females.  
+The confidence interval in this case provides likely values for differences in our means. In this instance, the mean of male working hours is 43.51973 and that of female hours is 37.02744. The difference between the two equals 6.49229, which falls within the confidence interval. Therefore, we can conclude that the confidence interval agrees with the test results.  
+```{r}
+t.test(male_work_week$Hours, female_work_week$Hours)
+
+abs(mean(male_work_week$Hours)-mean(female_work_week$Hours))/sqrt((sd(male_work_week$Hours)^2 + sd(female_work_week$Hours)^2)/2)
+```
+  
+# Problem 3  
+**9.56**  
+The fact that report withholds significant information is misleading. With 60 tests in which H0 is true, with the usual significance level of 0.05, we expect 5 % of the 60 to reject the null hypothesis incorrectly and predict that there is statistical significance. 5 % of 60 is 3, which is the exact amount of studies that reported statistical significance. So even if H0 is true, with significance level 0.05, we would expect 5 % of the tests reject H0 merely by chance, not because there is true statistical significance. That is why researchers should report all the analyses they have conducted.    
+    
+**10.14**      
+a) The population of interest consists of all adolescents.    
+Group 1: Adolescents who consume alcohol mixed with energy drinks.    
+Group 2: Adolescents who consume alcohol without energy drinks.    
+HO: mu(Y energy drink) - mu(N energy drink) = 0. There is no significant difference in blood alcohol content in adolescents between consuming alcohol with energy drinks and consuming alcohol without energy drinks.    
+Ha: mu(Y energy drink) - mu(N energy drink) != 0. There is a significant difference in blood alcohol content in adolescents between consuming alcohol with energy drinks and consuming alcohol without energy drinks.    
+    
+Does mixing energy drinks with alcohol influence the blood alcohol content in adolescents compared to consuming alcohol without energy drinks?    
+    
+b) A p-value of 0.01 indicates strong evidence against the null hypothesis. However, while the result of a t-test can informs us whether a difference is statistically significant, the confidence interval is more informative because it displays the range or the realistic values of the difference between the means. It also allows us to assess the practical significance of the results as well as the precision of the estimates    
+      
+**10.24**    
+a) The t-value is a measure of how many standard errors the observed difference in means is away from zero. A t-value of 11.70 implies that the difference in means is 11.70 standard errors away from zero. Such a substantial difference is not likely to have occurred due to random chance alone.    
+```{r}
+n1 <- 237
+n2 <- 95
+
+mu1 <- 2.9
+mu2 <- 0.1
+
+s1 <- 3.6
+s2 <- 0.5
+
+se <- sqrt((s1^2 / n1) + (s2^2 / n2))
+
+t <- ((mu1 - mu2) - 0) / se
+
+t
+```
+    
+b) With p-value as low as 0.00000000000000000000000001137361, we would reject H0. This leads to the conclusion that the two population means are significantly different and did not come from populations with the same mean.   
+     
+Since the t-test value is positive and very large, we can conclude with confidence that the group with mean mu1 had higher mean nicotine dependence.  
+```{r}
+df <- n1 + n2 - 2
+
+p_value <- 2 * pt(-abs(t), df)
+
+p_value
+```
+   
+c)    
+1. Approximately normal population distribution for each group.    
+2. Independent random sample, either from random sampling or randomized experiment.   
+3. A quantitative response variable observed in each of two groups.  

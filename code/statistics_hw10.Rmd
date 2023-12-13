@@ -194,36 +194,42 @@ The confidence interval, ranging from 42.27118 to 44.72828, is consistent with t
 c)  
 ```{r}
 find_outliers <- function(vec){
-  x.bar <- mean(vec)
-  s <- sd(vec)
+  q1 <- quantile(vec, prob=0.25)
+  q3 <- quantile(vec, prob=0.75)
   
-  upper = 3 * s + x.bar
-  lower = 3 * s - x.bar
+  iqr <- q3 - q1
   
-  result <- which(vec > upper | vec < lower)
+  upper <- q3 + 1.5 * iqr
+  lower <- q1 - 1.5 * iqr
+  
+  result <- vec[vec < lower | vec > upper]
 
   return(result)
 }
 ```
 Part a:  
 ```{r}
-work_week[find_outliers(work_week$Hours),]
+outliers <- find_outliers(work_week$Hours)
+length(outliers)
+outliers
 ```
-There are 20 outliers three or more standard deviations away from the sample mean.  
+There are 131 outliers that are more than 1.5 IQR below Q1 or more than 1.5 IQR above Q3.  
 Part b:  
 ```{r}
-male_work_week[find_outliers(male_work_week$Hours),]
+outliers <- find_outliers(male_work_week$Hours)
+length(outliers)
+outliers
 ```
-There are 2 outliers three or more standard deviations away from the sample mean.  
+There are 104 outliers that are more than 1.5 IQR below Q1 or more than 1.5 IQR above Q3. 
   
-Given that we used two-sided t-test to test the hypothesis, we would not be concerned about the legitimacy of the results. Two-sided inferences using the t distribution are robust against violations of normality assumption. Furthermore, for large samples, as in our case, this assumption is generally not important.  
+Outliers have a large impact on the mean, thus they tend to increase the estimate of the standard deviation, thereby decreasing the calculated t-statistic and lowering the chance of rejecting the null hypothesis.
   
 # Problem 4  
 **9.49**  
 a) If H0 is rejected, we can conclude that the drug is not safe.  
 b) Type 1 error would occur if we concluded that the drug is not safe, when in reality it was safe.  
-c) If we fail to reject H0 we can conclude that the drug is safe.  
-d) Type 2 error would occur if we failed to concluded that the drug not safe, when in reality it is not safe.
+c) If we fail to reject H0 we can conclude that the new drug being safe is a plausible outcome.  
+d) Type 2 error would occur if we failed to concluded that the drug is not safe, when in reality it is not safe.
 
 **9.52**  
 a) Type 1 Error:
